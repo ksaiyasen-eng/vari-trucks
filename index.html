@@ -1,0 +1,1706 @@
+<!doctype html>
+<html lang="lo">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#1459A6">
+<title>Vari ລົດຂົນສົ່ງ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+:root{
+  color-scheme:light;
+  --ground:#EEF3F5; --surface:#FFFFFF; --surface-2:#F5F8FA; --line:#D6E0E5; --line-strong:#B9C8D0;
+  --ink:#0F2330; --muted:#566B78; --faint:#8397A3;
+  --accent:#1459A6; --accent-ink:#FFFFFF; --accent-soft:#E1ECF8;
+  --tier:#C47A00; --tier-soft:#FBF0DC;
+  --good:#1D7A52; --good-soft:#E0F2E9; --warn:#B8321F; --warn-soft:#FBE4DF; --pend:#8A5A00; --pend-soft:#FFF3D6;
+  --shadow:0 1px 2px rgba(15,35,48,.06),0 4px 14px rgba(15,35,48,.05);
+  --r:10px;
+  --sans:"Noto Sans Lao","Leelawadee UI","Phetsarath OT",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  color-scheme:dark;
+  --ground:#0C161D; --surface:#13212B; --surface-2:#182935; --line:#243845; --line-strong:#33505F;
+  --ink:#E4EEF3; --muted:#9DB2BF; --faint:#6F8795;
+  --accent:#5EA3EE; --accent-ink:#06182A; --accent-soft:#16304A;
+  --tier:#F0B24A; --tier-soft:#3A2C12;
+  --good:#5CC896; --good-soft:#123326; --warn:#F08A77; --warn-soft:#3D1D17; --pend:#F0C060; --pend-soft:#3A2E12;
+  --shadow:0 1px 2px rgba(0,0,0,.3);
+}}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --ground:#0C161D; --surface:#13212B; --surface-2:#182935; --line:#243845; --line-strong:#33505F;
+  --ink:#E4EEF3; --muted:#9DB2BF; --faint:#6F8795;
+  --accent:#5EA3EE; --accent-ink:#06182A; --accent-soft:#16304A;
+  --tier:#F0B24A; --tier-soft:#3A2C12;
+  --good:#5CC896; --good-soft:#123326; --warn:#F08A77; --warn-soft:#3D1D17; --pend:#F0C060; --pend-soft:#3A2E12;
+  --shadow:0 1px 2px rgba(0,0,0,.3);
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--ground);color:var(--ink);font:15px/1.55 var(--sans);min-height:100vh;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+[hidden]{display:none!important}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1080px;margin:0 auto;padding-inline:16px;padding-block:0 56px}
+
+/* login */
+.login{min-height:100vh;display:grid;place-items:center;padding:24px 16px}
+.login-card{width:100%;max-width:380px;display:flex;flex-direction:column;gap:18px}
+.login h1{font-size:22px;margin:0;font-weight:800}
+.login .sub{color:var(--muted);font-size:14px;margin:0}
+.names{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.names button{border:1px solid var(--line-strong);background:var(--surface);border-radius:9px;padding:9px 4px;font-weight:600;font-size:14px}
+.names button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.names button.adm{grid-column:1/-1;font-weight:500;color:var(--muted)}
+.pin-dots{display:flex;gap:12px;justify-content:center;padding:6px 0}
+.pin-dots span{width:14px;height:14px;border-radius:50%;border:2px solid var(--line-strong)}
+.pin-dots span.on{background:var(--accent);border-color:var(--accent)}
+.keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.keypad button{height:56px;border-radius:12px;border:1px solid var(--line);background:var(--surface);font-family:var(--mono);font-size:22px;font-weight:600;box-shadow:var(--shadow)}
+.keypad button:active{background:var(--accent-soft)}
+.keypad .fn{font-family:var(--sans);font-size:14px;color:var(--muted);box-shadow:none;background:none}
+.err{color:var(--warn);font-size:14px;font-weight:600;min-height:1.4em;text-align:center}
+
+/* header */
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--ground);border-bottom:1px solid var(--line)}
+.top-in{max-width:1080px;margin:0 auto;padding:10px 16px 0;display:flex;flex-direction:column;gap:6px}
+.brand-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;margin-right:auto}
+.mark{width:34px;height:34px;border-radius:9px;background:var(--accent);display:grid;place-items:center;flex:none}
+.brand h1{font-size:16px;margin:0;line-height:1.2;font-weight:800}
+.brand small{display:block;color:var(--muted);font-size:12px}
+.who{display:flex;align-items:center;gap:8px;font-size:13px}
+.who b{font-weight:700}
+nav.tabs{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+nav.tabs button{border:0;background:none;padding:8px 13px 10px;font-weight:600;color:var(--muted);border-bottom:3px solid transparent;white-space:nowrap}
+nav.tabs button[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
+.banner{margin:12px 0 0;padding:10px 14px;border-radius:var(--r);font-size:13px;background:var(--tier-soft);border:1px solid var(--line)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--faint);display:inline-block;flex:none}
+.dot.ok{background:var(--good)} .dot.bad{background:var(--warn)} .dot.pend{background:var(--tier)}
+
+section.view{padding-top:16px;display:flex;flex-direction:column;gap:16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
+.card-h{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.card-h h2{font-size:15px;margin:0;font-weight:700;margin-right:auto}
+.card-b{padding:14px 16px}
+.label{font-size:12px;font-weight:600;color:var(--muted);letter-spacing:.02em}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.spacer{margin-left:auto}
+.stack{display:flex;flex-direction:column;gap:14px}
+
+.btn{border:1px solid var(--line-strong);background:var(--surface);border-radius:8px;padding:8px 14px;font-weight:600;font-size:14px}
+.btn:hover{background:var(--surface-2)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.good{background:var(--good);border-color:var(--good);color:#fff}
+.btn.danger{color:var(--warn);border-color:var(--warn);background:none}
+.btn.ghost{border-color:transparent;background:none;color:var(--accent)}
+.btn.big{padding:13px 18px;font-size:16px;border-radius:10px;width:100%}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.sm{padding:4px 10px;font-size:13px}
+.seg{display:inline-flex;border:1px solid var(--line-strong);border-radius:9px;overflow:hidden}
+.seg button{border:0;background:var(--surface);padding:7px 14px;font-weight:600;font-size:14px}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+input[type=date],select.inp{border:1px solid var(--line-strong);background:var(--surface);border-radius:8px;padding:7px 10px}
+
+/* hero numbers */
+.hero{display:grid;grid-template-columns:1.3fr 1fr;gap:12px}
+@media (max-width:620px){.hero{grid-template-columns:1fr}}
+.hero .card{padding:14px 16px}
+.hero .big{font-family:var(--mono);font-size:30px;font-weight:600;line-height:1.15}
+.hero .big small{font-family:var(--sans);font-size:14px;color:var(--muted);font-weight:500}
+.split{display:flex;gap:14px;flex-wrap:wrap;margin-top:6px;font-size:13px;color:var(--muted)}
+.split b{font-family:var(--mono);color:var(--ink)}
+
+/* form */
+.entry-grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:820px){.entry-grid{grid-template-columns:1fr}}
+.vehicles{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:8px}
+.veh{border:1px solid var(--line);background:var(--surface-2);border-radius:9px;padding:8px 10px;text-align:left;display:flex;flex-direction:column;gap:2px;min-width:0}
+.veh b{font-size:14.5px}
+.veh .meta{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:5px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.veh[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);box-shadow:inset 0 0 0 1px var(--accent)}
+.veh .amt{font-family:var(--mono);font-size:12.5px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line-strong);background:var(--surface);border-radius:999px;padding:6px 13px;font-size:14px;font-weight:500}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.chip.home{border-width:1.5px}
+.chip:disabled{opacity:1;cursor:default}
+.qty-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+.field{display:flex;flex-direction:column;gap:4px}
+.field input,.field textarea,.field select{border:1px solid var(--line-strong);background:var(--surface);border-radius:8px;padding:9px 10px;width:100%}
+.field input[type=number]{font-family:var(--mono);font-size:18px;font-weight:600}
+.field .hint{font-size:11.5px;color:var(--faint)}
+.result{position:sticky;top:112px}
+@media (max-width:820px){.result{position:static}}
+.total-big{font-family:var(--mono);font-size:32px;font-weight:600;line-height:1.1}
+.pp{display:flex;align-items:baseline;gap:8px;margin-top:6px}
+.pp .num{font-size:20px;font-weight:600;color:var(--accent)}
+.lines{margin-top:12px;border-top:1px dashed var(--line-strong);padding-top:10px;display:flex;flex-direction:column;gap:6px;font-size:13.5px}
+.lines div{display:flex;justify-content:space-between;gap:10px}
+.lines .k{color:var(--muted)}
+.ladder{margin-top:14px;display:flex;flex-direction:column;gap:6px}
+.ladder h3{font-size:12px;margin:0;color:var(--muted);font-weight:600}
+.rungs{display:flex;gap:3px}
+.rung{flex:1;border-radius:5px;padding:5px 3px;text-align:center;background:var(--surface-2);border:1px solid var(--line);font-size:10.5px;line-height:1.25;min-width:0}
+.rung .r{font-family:var(--mono);font-weight:600;font-size:12px;display:block}
+.rung.on{background:var(--tier-soft);border-color:var(--tier)}
+.rung.on .r{color:var(--tier)}
+.nudge{font-size:12.5px;color:var(--tier);font-weight:600}
+.warnbox{border:1px solid var(--warn);background:var(--warn-soft);border-radius:8px;padding:10px 12px;font-size:13.5px;display:flex;flex-direction:column;gap:6px}
+.warnbox label{display:flex;gap:8px;align-items:center;font-weight:600}
+.pill{display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:1px 9px;font-size:12px;font-weight:600;white-space:nowrap}
+.pill.good{background:var(--good-soft);color:var(--good)}
+.pill.warn{background:var(--warn-soft);color:var(--warn)}
+.pill.pend{background:var(--pend-soft);color:var(--pend)}
+.pill.muted{background:var(--surface-2);color:var(--muted);border:1px solid var(--line)}
+
+/* tables */
+.tbl-wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+th{font-size:12px;color:var(--muted);font-weight:600;background:var(--surface-2)}
+td.n,th.n{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums}
+tr.tot td{font-weight:700;background:var(--surface-2);border-top:2px solid var(--line-strong)}
+tr.click{cursor:pointer} tr.click:hover td{background:var(--accent-soft)}
+td.zero{color:var(--faint)}
+td input.cell{width:64px;border:1px solid var(--line-strong);border-radius:6px;padding:3px 6px;font-family:var(--mono);text-align:right;background:var(--surface)}
+td select.cell{border:1px solid var(--line-strong);border-radius:6px;padding:3px 4px;background:var(--surface)}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+@media (max-width:700px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.kpi{padding:12px 14px}
+.kpi .v{font-family:var(--mono);font-size:22px;font-weight:600;line-height:1.2}
+.kpi.warn .v{color:var(--warn)} .kpi.pend .v{color:var(--pend)}
+.detail{background:var(--surface-2);padding:10px 14px}
+.tier-edit td{padding:4px 6px}
+.tier-edit input,.tier-edit select{width:100%;min-width:70px;border:1px solid var(--line-strong);border-radius:6px;padding:4px 6px;background:var(--surface)}
+.tier-edit input[type=number]{font-family:var(--mono)}
+.set-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--ground);padding:10px 18px;border-radius:999px;font-size:14px;font-weight:600;z-index:50;box-shadow:0 6px 20px rgba(0,0,0,.2);max-width:calc(100% - 32px);text-align:center}
+.empty{color:var(--muted);font-size:14px;padding:18px;text-align:center}
+.pinshow{font-family:var(--mono);font-size:22px;font-weight:600;letter-spacing:.2em;background:var(--tier-soft);border:1px dashed var(--tier);border-radius:8px;padding:8px 12px;display:inline-block}
+@media (prefers-reduced-motion:no-preference){.veh,.chip,.btn{transition:background .12s,border-color .12s}}
+</style>
+</head>
+<body>
+
+<!-- ===== LOGIN ===== -->
+<div class="login" id="loginScreen" hidden>
+  <div class="login-card">
+    <div class="row" style="gap:12px">
+      <div class="mark" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24"><path d="M12 3c3.2 4 5.5 7.2 5.5 10.2A5.5 5.5 0 0 1 6.5 13.2C6.5 10.2 8.8 7 12 3Z" fill="var(--accent-ink)"/></svg></div>
+      <div><h1>Vari ລົດຂົນສົ່ງ</h1><p class="sub">ເລືອກຊື່ຂອງທ່ານ ແລ້ວໃສ່ PIN</p></div>
+    </div>
+    <div id="demoNote" class="banner" hidden></div>
+    <div class="names" id="nameGrid"></div>
+    <div class="pin-dots" id="pinDots" aria-live="polite"></div>
+    <div class="err" id="loginErr"></div>
+    <div class="keypad" id="keypad"></div>
+  </div>
+</div>
+
+<!-- ===== APP ===== -->
+<div id="appScreen" hidden>
+<header class="top">
+  <div class="top-in">
+    <div class="brand-row">
+      <div class="brand">
+        <div class="mark" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24"><path d="M12 3c3.2 4 5.5 7.2 5.5 10.2A5.5 5.5 0 0 1 6.5 13.2C6.5 10.2 8.8 7 12 3Z" fill="var(--accent-ink)"/></svg></div>
+        <div><h1>Vari ລົດຂົນສົ່ງ</h1><small id="todayLabel"></small></div>
+      </div>
+      <div class="who"><span class="dot" id="netDot"></span><b id="whoName"></b><span class="pill muted" id="whoRole"></span><button class="btn ghost sm" id="logoutBtn">ອອກ</button></div>
+    </div>
+    <nav class="tabs" role="tablist" id="tabs"></nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <div id="banner" class="banner" hidden></div>
+
+  <!-- report form (driver + admin) -->
+  <section class="view" id="v-report" hidden>
+    <div class="hero" id="heroMine"></div>
+    <div class="card">
+      <div class="card-b stack">
+        <div class="row" id="dateRow"></div>
+        <div class="vehicles" id="vehList"></div>
+      </div>
+    </div>
+    <div class="entry-grid">
+      <div class="card">
+        <div class="card-h"><h2 id="formTitle">—</h2><span id="formState"></span></div>
+        <div class="card-b stack">
+          <div class="stack" style="gap:8px">
+            <div class="row"><span class="label">ພະນັກງານຂຶ້ນລົດ</span><button class="btn ghost sm spacer" id="copyCrew">ໃຊ້ທີມມື້ກ່ອນ</button></div>
+            <div class="chips" id="crewChips"></div>
+          </div>
+          <div class="qty-grid" id="qtyGrid"></div>
+          <div id="dmgBox"></div>
+          <div class="qty-grid">
+            <label class="field" id="adjField"><span class="label">ປັບເພີ່ມ/ຫັກ (ກີບ)</span><input type="number" id="fAdj" inputmode="numeric" step="1000"><span class="hint">OT ຫຼື ຫັກ (ລົບ = ຫັກ)</span></label>
+            <label class="field" style="grid-column:span 2"><span class="label">ໝາຍເຫດ</span><input type="text" id="fNote" maxlength="200" placeholder="ເຊັ່ນ ລູກຄ້າຄືນຕຸກ, ລົດເສຍ"></label>
+          </div>
+          <div id="warnBox"></div>
+          <div class="row">
+            <button class="btn primary" id="saveBtn">ສົ່ງລາຍງານ</button>
+            <label class="row label" id="approveWrap" hidden><input type="checkbox" id="fApprove" checked> ອະນຸມັດເລີຍ</label>
+            <span class="spacer"></span>
+            <button class="btn danger sm" id="delBtn" hidden>ລຶບ</button>
+          </div>
+        </div>
+      </div>
+      <div class="card result"><div class="card-b" id="resultBox"></div><div id="movesBox"></div></div>
+    </div>
+    <div class="card" id="dayCard">
+      <div class="card-h"><h2 id="dayTitle">ລົດທຸກຄັນ</h2><span class="num" id="dayTotal"></span></div>
+      <div class="tbl-wrap"><table id="dayTable"></table></div>
+    </div>
+  </section>
+
+  <!-- driver: my month -->
+  <section class="view" id="v-mine" hidden>
+    <div class="kpis" id="mineKpis"></div>
+    <div class="card">
+      <div class="card-h"><h2 id="mineTitle">ລາຍການຂອງຂ້ອຍ</h2><span class="label">ລໍຖ້າ = ຜູ້ຈັດການຍັງບໍ່ໄດ້ກວດ</span></div>
+      <div class="tbl-wrap"><table id="mineTable"></table></div>
+    </div>
+    <div class="card" id="pinCard">
+      <div class="card-h"><h2>ປ່ຽນ PIN</h2></div>
+      <div class="card-b row">
+        <input class="inp" style="border:1px solid var(--line-strong);border-radius:8px;padding:8px 10px;width:130px" type="password" inputmode="numeric" id="pinOld" placeholder="PIN ເກົ່າ" autocomplete="current-password">
+        <input class="inp" style="border:1px solid var(--line-strong);border-radius:8px;padding:8px 10px;width:130px" type="password" inputmode="numeric" id="pinNew" placeholder="PIN ໃໝ່ 4–8 ຕົວ" autocomplete="new-password">
+        <button class="btn" id="pinChange">ປ່ຽນ</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- admin: today dashboard -->
+  <section class="view" id="v-today" hidden>
+    <div class="row"><button class="btn sm" id="tPrev" aria-label="ມື້ກ່ອນ">‹</button><input type="date" id="tDate" aria-label="ວັນທີ"><button class="btn sm" id="tNext" aria-label="ມື້ຕໍ່ໄປ">›</button><button class="btn ghost sm" id="tToday">ມື້ນີ້</button><span class="spacer"></span><button class="btn sm" id="tRefresh">ໂຫຼດໃໝ່</button></div>
+    <div class="kpis" id="todayKpis"></div>
+    <div class="card">
+      <div class="card-h"><h2>ລາຍງານຂອງແຕ່ລະລົດ</h2><button class="btn good sm" id="approveAll" hidden>ອະນຸມັດທັງໝົດ</button></div>
+      <div class="tbl-wrap"><table id="todayTable"></table></div>
+    </div>
+  </section>
+
+  <!-- admin: people -->
+  <section class="view" id="v-people" hidden>
+    <div class="row" id="pPeriodRow"></div>
+    <div class="kpis" id="peopleKpis"></div>
+    <div class="card">
+      <div class="card-h"><h2>ຜົນຕອບແທນລາຍຄົນ</h2><span class="label">ປ້ອນ ມື້ຂາດ / ລາ / ມາເຊົ້າ ເພື່ອຄິດເງິນນະໂຍບາຍ</span><button class="btn sm" id="csvPeople">Export Excel</button></div>
+      <div class="tbl-wrap"><table id="peopleTable"></table></div>
+    </div>
+  </section>
+
+  <!-- admin: fleet -->
+  <section class="view" id="v-fleet" hidden>
+    <div class="row" id="fPeriodRow"></div>
+    <div class="card">
+      <div class="card-h"><h2>ລາຍອາທິດ ແຍກຕາມລົດ (ກີບ)</h2><span class="label">ຈັນ–ອາທິດ</span></div>
+      <div class="tbl-wrap"><table id="weekTable"></table></div>
+    </div>
+    <div class="card">
+      <div class="card-h"><h2>ລາຍວັນ × ລົດ</h2><span class="label">ກົດຊ່ອງເພື່ອແກ້ໄຂ · ສີເຫຼືອງ = ລໍຖ້າອະນຸມັດ</span><button class="btn sm" id="csvDays">Export Excel</button></div>
+      <div class="tbl-wrap"><table id="gridTable"></table></div>
+    </div>
+    <div id="bigCards" class="stack"></div>
+  </section>
+
+  <!-- admin: ERP -->
+  <section class="view" id="v-erp" hidden>
+    <div class="card">
+      <div class="card-h"><h2>ນຳເຂົ້າຍອດຈາກ ERP</h2><span class="label">ລາຍງານການຂາຍ (ລົດນ້ອຍ) · ລາຍການໂອນ TL- (ລົດໃຫຍ່) · ຫຼື ໄຟລ໌ Export ຂອງແອັບນີ້ (ກູ້ຄືນ) · ເລືອກໄດ້ຫຼາຍໄຟລ໌</span></div>
+      <div class="card-b stack">
+        <div class="row"><input type="file" id="erpFile" accept=".xlsx,.xls,.csv" multiple><span class="label" id="erpMsg"></span></div>
+        <details><summary class="label" style="cursor:pointer">ຫຼື ວາງຂໍ້ມູນການໂອນສິນຄ້າ (copy ຕາຕະລາງ TL- ຈາກໜ້າ ERP)</summary>
+          <div class="stack" style="margin-top:8px"><textarea id="tlPaste" rows="5" style="width:100%;border:1px solid var(--line-strong);border-radius:8px;padding:8px;background:var(--surface);font-size:13px" placeholder="TL-2026-005890   ໂຮງງານ   →   (ຊື່ລົດ 9041)   Vari Purified ນ້ຳຖັງທົ່ວໄປ 18 ລິດ   500 ຕຸກເປົ່າ   26 ກ.ຍ. 2026, 16:56   ຮັບແລ້ວ"></textarea>
+          <div class="row"><button class="btn sm" id="tlRead">ອ່ານຂໍ້ມູນທີ່ວາງ</button></div></div></details>
+        <div id="erpSummary"></div>
+        <div class="tbl-wrap"><table id="erpTable"></table></div>
+        <div class="row"><button class="btn primary" id="erpGo" hidden>ນຳເຂົ້າ</button><span class="label">ລາຍການໃໝ່ = ລໍຖ້າກວດ, ບໍ່ມີທີມ → ຄົນຂັບເຂົ້າມາເລືອກທີມເອງ. ລາຍການທີ່ອະນຸມັດແລ້ວ ຈະບໍ່ຖືກທັບ.</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-h"><h2>ກົດການອ່ານ ERP</h2><button class="btn primary sm" id="erpCfgSave">ບັນທຶກ</button></div>
+      <div class="card-b stack" id="erpCfg"></div>
+    </div>
+    <div class="card">
+      <div class="card-h"><h2>ອັດຕະໂນມັດ</h2></div>
+      <div class="card-b"><p style="margin:0">ຖ້າບໍ່ຢາກອັບໂຫຼດເອງທຸກມື້: ຕັ້ງໂຟນເດີ Google Drive ຕາມຄູ່ມືໃນ <b>apps-script.gs</b> (ຫົວຂໍ້ "ນຳເຂົ້າ ERP ອັດຕະໂນມັດ"). ຈາກນັ້ນພຽງແຕ່ບັນທຶກໄຟລ໌ Export ໃສ່ໂຟນເດີນັ້ນ — ລະບົບຈະນຳເຂົ້າເອງທຸກ 30 ນາທີ ແລະ ບັນທຶກຜົນໃນ sheet "log".</p></div>
+    </div>
+  </section>
+
+  <!-- admin: settings -->
+  <section class="view" id="v-settings" hidden>
+    <div class="set-grid" id="setGrid"></div>
+    <div class="row"><button class="btn primary" id="setSave">ບັນທຶກອັດຕາ ແລະ ລາຍຊື່ລົດ</button><span class="label" id="setMsg"></span></div>
+    <div class="card">
+      <div class="card-h"><h2>ພະນັກງານ ແລະ PIN</h2><button class="btn sm" id="staffAdd">+ ພະນັກງານ</button><button class="btn primary sm" id="staffSave">ບັນທຶກລາຍຊື່</button></div>
+      <div class="card-b tbl-wrap"><table class="tier-edit" id="staffTable"></table>
+        <p class="label">ຄົນໃໝ່ຈະໄດ້ PIN ອັດຕະໂນມັດ (ສະແດງຄັ້ງດຽວ). ປິດ "ເຮັດວຽກ" ແທນການລຶບ ເພື່ອຮັກສາປະຫວັດ. ຊື່ຫຼິ້ນປ່ຽນບໍ່ໄດ້ຫຼັງບັນທຶກ.</p>
+        <div id="pinOut"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-h"><h2>ນຳເຂົ້າຂໍ້ມູນເກົ່າ</h2></div>
+      <div class="card-b row"><span>ຂໍ້ມູນຈາກ Excel ຮອບ 21/08–20/09/2026 (108 ລາຍການ, ສະຖານະ ອະນຸມັດແລ້ວ)</span><button class="btn sm spacer" id="importBtn">ນຳເຂົ້າ</button></div>
+    </div>
+  </section>
+</main>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+/* ===== VariCore: shared pay rules + API logic (identical copy in apps-script.gs and index.html) ===== */
+var VariCore = (function () {
+  var DEFAULT_CONFIG = {
+    periodStartDay: 21,
+    hhTiers: [[1, 500], [121, 800], [151, 1400], [201, 2000], [251, 2300], [281, 3000]],
+    orgTiers: [[1, 280], [201, 600], [251, 805], [281, 1050]],
+    bigTiers: [[1, 35000], [201, 50000], [300, 65000], [400, 95000]],
+    flat: { glass: 1500, m250: 350, pack: 350 },
+    bonus: { full: 300000, early: 200000 },
+    depositPerBottle: 50000, // ມັດຈຳຕໍ່ຕຸກ 18L (ຈາກ TL-2026-005869: 420 ຕຸກ = 21,000,000)
+    warnDaily: 350,      // ຈຳນວນຕໍ່ມື້ (ລົດນ້ອຍ) ທີ່ຕ້ອງຢືນຢັນກ່ອນສົ່ງ
+    warnRound: 700,      // ຈຳນວນຕໍ່ຮອບ (ລົດໃຫຍ່) ທີ່ຕ້ອງຢືນຢັນ
+    hardCap: 3000,       // ເກີນນີ້ ບໍ່ຮັບ
+    driverBackDays: 2,   // ຄົນຂັບ ແກ້ຍ້ອນຫຼັງໄດ້ກີ່ມື້ (ERP ມັກນຳເຂົ້າມື້ຖັດໄປ)
+    erp: {
+      // ຊື່ລົດໃນ ERP (ຖັນ ລົດຂົນສົ່ງ) → ລະຫັດລົດໃນແອັບ. ລົດທີ່ບໍ່ຢູ່ນີ້ ຈະຖືກຂ້າມ (ແຟຣນຊາຍ, ລົດຮ່ວມ)
+      vehicleMap: { "5311": "5311", "6096": "6096", "6097": "6097", "5968": "5968", "1942": "1942", "ລົດໄຟຟ້າ": "JAC" },
+      orgVehicles: ["6097"],             // ລົດທີ່ນັບຕຸກ 18L ທັງໝົດເປັນ ອົງກອນ
+      retailPrice: 28000,                // ລາຄານີ້ຂຶ້ນໄປ + ປະເພດລູກຄ້າຄົວເຮືອນ = ຄົວເຮືອນ, ນອກນັ້ນ = ອົງກອນ
+      householdTypes: ["RETAIL", "ຄົວເຮືອນ"],
+      products: [["18 ລິດ", "18L"], ["ຂວດແກ້ວ", "glass"], ["250", "m250"], ["", "pack"]], // ຄຳໃນຊື່ສິນຄ້າ → ຖັນ (ແຖວສຸດທ້າຍ "" = ອື່ນໆ)
+      // ລາຍການໂອນສິນຄ້າ (TL-...) ສຳລັບລົດໃຫຍ່
+      transferVehicleMap: { "9041": "9041" }, // ຊື່ລົດໃນລາຍການໂອນ → ລະຫັດລົດ (ຊື່ທີ່ມີຄຳນີ້ຢູ່ ກໍນັບ ເຊັ່ນ "ລົດ 9041")
+      transferExcludeDest: ["ໂຮງງານ"],   // ສົ່ງຕຸກເຕັມຄືນບ່ອນນີ້ ບໍ່ນັບເປັນການສົ່ງ
+      countEmptyRounds: false             // ນະໂຍບາຍ: ຖ້ຽວຕຸກເປົ່າ ບໍ່ຈ່າຍ
+    },
+    vehicles: [
+      { id: "5311", name: "ລົດ 5311", type: "small" }, { id: "6096", name: "ລົດ 6096", type: "small" },
+      { id: "6097", name: "ລົດ 6097", type: "small" }, { id: "5968", name: "ລົດ 5968", type: "small" },
+      { id: "1942", name: "ລົດ 1942", type: "small" }, { id: "JAC", name: "ລົດໄຟຟ້າ JAC", type: "small" },
+      { id: "9041", name: "ລົດໃຫຍ່ 9041", type: "big" }
+    ]
+  };
+  var DEFAULT_STAFF = [
+    ["admin", "ຜູ້ຈັດການຂົນສົ່ງ", "", "admin"],
+    ["ຊີບ", "ທ້າວ ຊີບ", "5311"], ["ຕິກ", "ທ້າວ ຕິກ", "5311"], ["ຫວານ", "ຫວານ", "5311"],
+    ["ລຸນ", "ທ້າວ ລຸນ", "6096"], ["ໂກ້", "ທ້າວ ພອນເທວາ (ໂກ້)", "6097"], ["ອ່າຍ", "ທ້າວ ຄໍາເພັດ (ອ່າຍ)", "6097"],
+    ["ນາວ", "ທ້າວ ນາວ", "6097"], ["ບຸນມາ", "ທ້າວ ບຸນມາ (ມາ)", "5968"], ["ອອຍ", "ທ້າວ ອອຍ", "5968"],
+    ["ທ່ຽງ", "ທ້າວ ທ່ຽງ", "9041"], ["ໜຶ່ງ", "ທ້າວ ໜຶ່ງ", "9041"], ["ວິຊະນຸ", "ທ້າວ ວິຊະນຸ", "9041"],
+    ["ຕີ", "ຕີ", ""], ["ເພັດ", "ເພັດ", ""], ["ຕ່ອງ", "ຕ່ອງ", ""], ["ຄອງ", "ຄອງ", ""], ["ຕົ້ນຕະວັນ", "ຕົ້ນຕະວັນ", ""], ["ອາເລັກ", "ອາເລັກ", ""]
+  ].map(function (r) { return { nick: r[0], full: r[1], veh: r[2], role: r[3] || "driver", active: true }; });
+
+  var QTY = ["hh", "org", "glass", "m250", "pack"];
+  function num(v) { var x = Number(v); return isFinite(x) ? x : 0; }
+  function tierIndex(q, t) { if (!(q > 0)) return -1; var i = -1; for (var k = 0; k < t.length; k++) if (q >= t[k][0]) i = k; return i; }
+  function tierRate(q, t) { var i = tierIndex(q, t); return i < 0 ? 0 : t[i][1]; }
+  function vehicle(cfg, id) { var v = (cfg.vehicles || []).filter(function (x) { return x.id === id; })[0]; return v || null; }
+  function fmt(n) { return (Math.round(n) || 0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
+
+  function calc(e, cfg) {
+    var v = vehicle(cfg, e.veh), type = v ? v.type : "small", lines = [], total = 0, qty = 0;
+    if (type === "big") {
+      (e.rounds || []).forEach(function (q, i) {
+        q = num(q); if (q > 0) { var r = tierRate(q, cfg.bigTiers); lines.push(["ຮອບ " + (i + 1) + ": " + fmt(q) + " ຕຸກ", r]); total += r; qty += q; }
+      });
+    } else {
+      var hh = num(e.hh), org = num(e.org), r1 = tierRate(hh, cfg.hhTiers), r2 = tierRate(org, cfg.orgTiers);
+      if (hh > 0) { lines.push(["ຄົວເຮືອນ " + fmt(hh) + " × " + fmt(r1), hh * r1]); total += hh * r1; qty += hh; }
+      if (org > 0) { lines.push(["ອົງກອນ " + fmt(org) + " × " + fmt(r2), org * r2]); total += org * r2; qty += org; }
+    }
+    [["glass", "ຂວດແກ້ວ"], ["m250", "250ml"], ["pack", "ນ້ຳແພັກ"]].forEach(function (p) {
+      var q = num(e[p[0]]); if (q > 0) { var r = num(cfg.flat[p[0]]); lines.push([p[1] + " " + fmt(q) + " × " + fmt(r), q * r]); total += q * r; qty += q; }
+    });
+    var adj = num(e.adj); if (adj) { lines.push(["ປັບເພີ່ມ/ຫັກ", adj]); total += adj; }
+    var crew = (e.crew || []).filter(Boolean);
+    return { total: total, perPerson: crew.length ? total / crew.length : 0, crew: crew, qty: qty, lines: lines, type: type };
+  }
+
+  // ---- dates (YYYY-MM-DD, UTC math) ----
+  function toD(s) { var p = s.split("-"); return new Date(Date.UTC(+p[0], +p[1] - 1, +p[2])); }
+  function toS(d) { return d.toISOString().slice(0, 10); }
+  function addDays(s, n) { var d = toD(s); d.setUTCDate(d.getUTCDate() + n); return toS(d); }
+  function periodOf(s, startDay) {
+    var d = toD(s), y = d.getUTCFullYear(), m = d.getUTCMonth();
+    if (d.getUTCDate() < startDay) { m -= 1; if (m < 0) { m = 11; y -= 1; } }
+    return { start: toS(new Date(Date.UTC(y, m, startDay))), end: addDays(toS(new Date(Date.UTC(y, m + 1, startDay))), -1) };
+  }
+  var DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+
+  // ---- warnings shown before submit (soft) ----
+  function warnings(e, cfg) {
+    var w = [], c = calc(e, cfg);
+    if (c.type === "big") (e.rounds || []).forEach(function (q, i) { if (num(q) > num(cfg.warnRound)) w.push("ຮອບ " + (i + 1) + " = " + fmt(q) + " ຕຸກ ສູງກວ່າປົກກະຕິ"); });
+    else QTY.forEach(function (k) { if (num(e[k]) > num(cfg.warnDaily)) w.push(fmt(e[k]) + " ສູງກວ່າປົກກະຕິ (" + fmt(cfg.warnDaily) + ")"); });
+    if (!c.crew.length) w.push("ຍັງບໍ່ມີຊື່ພະນັກງານ");
+    return w;
+  }
+
+  function cleanEntry(raw, cfg) {
+    var e = { date: String(raw.date || ""), veh: String(raw.veh || ""), note: String(raw.note || "").slice(0, 200) };
+    var seen = {};
+    e.crew = (raw.crew || []).map(function (x) { return String(x).trim(); }).filter(function (x) { if (!x || seen[x]) return false; seen[x] = 1; return true; }).slice(0, 6);
+    function n(v) { if (v === null || v === undefined || v === "") return null; var x = Math.round(Number(v)); return isFinite(x) && x >= 0 ? x : null; }
+    QTY.forEach(function (k) { e[k] = n(raw[k]); });
+    var r = raw.rounds || []; e.rounds = [n(r[0]), n(r[1]), n(r[2]), n(r[3])];
+    var a = Number(raw.adj); e.adj = raw.adj === null || raw.adj === undefined || raw.adj === "" || !isFinite(a) ? null : Math.round(a);
+    var v = vehicle(cfg, e.veh);
+    if (v && v.type === "big") { e.hh = null; e.org = null; } else e.rounds = [null, null, null, null];
+    e.damages = (Array.isArray(raw.damages) ? raw.damages : []).map(function (d) {
+      return { place: String(d.place || "").trim().slice(0, 60), kind: d.kind === "empty" ? "empty" : "full", qty: Math.round(num(d.qty)), note: String(d.note || "").slice(0, 100) };
+    }).filter(function (d) { return d.qty > 0; }).slice(0, 20);
+    return e;
+  }
+
+  // ---- token ----
+  function makeToken(S, nick, role) {
+    var payload = [nick, role, Date.now() + 30 * 864e5].join("|");
+    return payload + "|" + S.hmac(payload);
+  }
+  function readToken(S, token) {
+    if (typeof token !== "string") return null;
+    var i = token.lastIndexOf("|"); if (i < 0) return null;
+    var payload = token.slice(0, i), sig = token.slice(i + 1);
+    if (S.hmac(payload) !== sig) return null;
+    var p = payload.split("|"); if (p.length !== 3 || Number(p[2]) < Date.now()) return null;
+    var st = S.listStaff().filter(function (s) { return s.nick === p[0] && s.active; })[0];
+    if (!st || st.role !== p[1]) return null;
+    return st;
+  }
+  function pub(s) { return { nick: s.nick, full: s.full, veh: s.veh, role: s.role, active: s.active }; }
+  function randPin(S, len) { var s = ""; while (s.length < len) s += String(S.randInt(10)); return s; }
+  function withPin(S, s, pin) { s.salt = S.randomId(); s.pinHash = S.hash(s.salt + ":" + pin); return s; }
+
+  function ok(o) { o = o || {}; o.ok = true; return o; }
+  function err(code, msg, extra) { var o = extra || {}; o.ok = false; o.error = code; if (msg) o.message = msg; return o; }
+
+  function validConfig(c) {
+    function tiers(t) { return Array.isArray(t) && t.length && t.every(function (r) { return Array.isArray(r) && r.length === 2 && isFinite(r[0]) && isFinite(r[1]) && r[0] >= 0 && r[1] >= 0; }); }
+    if (!c || !tiers(c.hhTiers) || !tiers(c.orgTiers) || !tiers(c.bigTiers)) return "ຂັ້ນອັດຕາບໍ່ຖືກຕ້ອງ";
+    if (!Array.isArray(c.vehicles) || !c.vehicles.length) return "ຕ້ອງມີລົດຢ່າງໜ້ອຍ 1 ຄັນ";
+    var ids = {}; for (var i = 0; i < c.vehicles.length; i++) { var v = c.vehicles[i]; if (!/^[A-Za-z0-9_-]{1,20}$/.test(v.id || "") || ids[v.id]) return "ລະຫັດລົດບໍ່ຖືກ ຫຼື ຊ້ຳ: " + v.id; ids[v.id] = 1; if (v.type !== "small" && v.type !== "big") return "ປະເພດລົດບໍ່ຖືກ"; }
+    var d = Number(c.periodStartDay); if (!(d >= 1 && d <= 28)) return "ວັນເລີ່ມຮອບ 1–28";
+    var E = c.erp;
+    if (E) {
+      if (typeof E.vehicleMap !== "object" || !Array.isArray(E.orgVehicles) || !Array.isArray(E.householdTypes) || !Array.isArray(E.products)) return "ຕັ້ງຄ່າ ERP ບໍ່ຖືກຕ້ອງ";
+      if (!E.products.every(function (p) { return Array.isArray(p) && ["18L", "glass", "m250", "pack"].indexOf(p[1]) >= 0; })) return "ກົດສິນຄ້າ ERP ບໍ່ຖືກຕ້ອງ";
+    }
+    return null;
+  }
+  function sortTiers(c) { ["hhTiers", "orgTiers", "bigTiers"].forEach(function (k) { c[k] = c[k].map(function (r) { return [Number(r[0]), Number(r[1])]; }).sort(function (a, b) { return a[0] - b[0]; }); }); return c; }
+
+  // ================= ERP import =================
+  function pad2(n) { return ("0" + n).slice(-2); }
+  function isDate(v) { return Object.prototype.toString.call(v) === "[object Date]" && !isNaN(v); }
+  function erpDate(v) {
+    if (isDate(v)) return v.getFullYear() + "-" + pad2(v.getMonth() + 1) + "-" + pad2(v.getDate());
+    var s = String(v == null ? "" : v).trim(), m;
+    if ((m = /^(\d{4})-(\d{2})-(\d{2})/.exec(s))) return m[1] + "-" + m[2] + "-" + m[3];
+    if ((m = /^(\d{1,2})\/(\d{1,2})\/(\d{4})/.exec(s))) return m[3] + "-" + ("0" + m[2]).slice(-2) + "-" + ("0" + m[1]).slice(-2);
+    return null;
+  }
+  // rows = objects keyed by the ERP sales-export header (ເລກທີບິນ, ວັນທີຂາຍ, ລົດຂົນສົ່ງ, ຜະລິດຕະພັນ, ...)
+  function erpAggregate(rows, cfg) {
+    var E = cfg.erp || DEFAULT_CONFIG.erp, out = {}, seen = {}, unmapped = {}, lines = 0, dups = 0, bad = 0;
+    (rows || []).forEach(function (r) {
+      var bill = r["ເລກທີບິນ"], prod = String(r["ຜະລິດຕະພັນ"] || "");
+      if (!bill || !prod) return;
+      var key = bill + "|" + prod + "|" + (r["ຊື່ລູກຄ້າ"] || "");
+      if (seen[key]) { dups++; return; } seen[key] = 1;
+      var vraw = String(r["ລົດຂົນສົ່ງ"] == null ? "" : r["ລົດຂົນສົ່ງ"]).trim(), veh = E.vehicleMap[vraw];
+      if (!veh || !vehicle(cfg, veh)) { var u = vraw || "(ວ່າງ)"; unmapped[u] = (unmapped[u] || 0) + 1; return; }
+      var date = erpDate(r["ວັນທີຂາຍ"]), qty = num(r["ຈຳນວນທັງຫມົດ"]);
+      if (!date || !(qty > 0)) { bad++; return; }
+      var field = "pack";
+      for (var i = 0; i < E.products.length; i++) if (!E.products[i][0] || prod.indexOf(E.products[i][0]) >= 0) { field = E.products[i][1]; break; }
+      if (field === "18L") {
+        var hhOk = E.orgVehicles.indexOf(veh) < 0 && num(r["ລາຄາຕໍ່ໜ່ວຍ"]) >= num(E.retailPrice) && E.householdTypes.indexOf(String(r["ປະເພດລູກຄ້າ"] || "").trim()) >= 0;
+        field = hhOk ? "hh" : "org";
+      }
+      var k = date + "_" + veh, o = out[k] || (out[k] = { date: date, veh: veh, hh: 0, org: 0, glass: 0, m250: 0, pack: 0, bills: {} });
+      o[field] += qty; o.bills[bill] = 1; lines++;
+    });
+    var items = Object.keys(out).sort().map(function (k) { var o = out[k]; o.bills = Object.keys(o.bills).length; return o; });
+    return { items: items, unmapped: unmapped, lines: lines, dups: dups, bad: bad };
+  }
+  function qtyText(e) {
+    var r = (e.rounds || []).filter(function (x) { return num(x) > 0; });
+    var s = QTY.filter(function (k) { return num(e[k]); }).map(function (k) { return k + " " + num(e[k]); });
+    if (r.length) s.unshift("ຮອບ " + r.join("/"));
+    return s.join(", ") || "0";
+  }
+
+  // ---- stock transfers (TL-...) for big trucks ----
+  var LAO_MON = { "ມ.ກ": 1, "ກ.ພ": 2, "ມ.ນ": 3, "ມ.ສ": 4, "ພ.ພ": 5, "ມິ.ຖ": 6, "ມິ.ຍ": 6, "ກ.ລ": 7, "ສ.ຫ": 8, "ກ.ຍ": 9, "ຕ.ລ": 10, "ພ.ຈ": 11, "ທ.ວ": 12 };
+  function laoDateTime(v) {
+    if (isDate(v)) return { date: erpDate(v), time: pad2(v.getHours()) + ":" + pad2(v.getMinutes()) };
+    var s = String(v == null ? "" : v), m = /(\d{1,2})\s+([^\s\d,]+)\s+(\d{4}),?\s*(\d{1,2}):(\d{2})/.exec(s);
+    if (m) { var mo = LAO_MON[m[2].replace(/\.+$/, "")]; if (mo) return { date: m[3] + "-" + ("0" + mo).slice(-2) + "-" + ("0" + m[1]).slice(-2), time: ("0" + m[4]).slice(-2) + ":" + m[5] }; }
+    var d = erpDate(s); if (!d) return null;
+    var t = /(\d{1,2}):(\d{2})/.exec(s.slice(8)); return { date: d, time: t ? ("0" + t[1]).slice(-2) + ":" + t[2] : "00:00" };
+  }
+  function statusOk(st) { st = String(st || ""); return !st || /ຮັບແລ້ວ|ສຳເລັດ/.test(st); }
+  // rows = objects from an exported transfer file (header names matched loosely)
+  function parseTransferRows(rows) {
+    return (rows || []).map(function (r) {
+      var keys = Object.keys(r), all = keys.map(function (k) { return String(r[k] == null ? "" : r[k]); }).join(" | ");
+      function get(re) { for (var i = 0; i < keys.length; i++) if (re.test(keys[i])) return r[keys[i]]; return ""; }
+      var idm = /TL-[\dA-Za-z-]+/.exec(all), dt = laoDateTime(get(/ວັນທີ|ເວລາ|date/i));
+      return { id: idm ? idm[0] : String(get(/^ເລກ/)), from: String(get(/^ຈາກ/) || "").trim(), to: String(get(/^ຫາ|^ໄປ/) || "").trim(),
+        item: String(get(/ລາຍການ|ສິນຄ້າ/) || ""), qty: num(String(get(/ຈຳນວນ/)).replace(/[^\d.]/g, "")), full: !/ເປົ່າ/.test(all), dmg: /ເສຍ|ແຕກ|ຊຳລຸດ/.test(all),
+        date: dt && dt.date, time: dt && dt.time, status: String(get(/ສະຖານະ/) || "") };
+    }).filter(function (t) { return t.id && t.qty > 0 && t.date; });
+  }
+  // text copied from the ERP transfer page (rows start with TL-YYYY-NNNNNN)
+  function parseTransferText(text) {
+    return String(text || "").split(/(?=TL-\d{4}-\d+)/).filter(function (c) { return /^TL-\d{4}-\d+/.test(c); }).map(function (c) {
+      var id = /^TL-\d{4}-\d+/.exec(c)[0], toks = c.slice(id.length).split(/[\t\n\r]+/).map(function (x) { return x.trim(); }).filter(Boolean);
+      var ai = toks.indexOf("→"), fi = ai > 0 ? ai - 1 : 0, from = toks[fi], to = toks[ai > 0 ? ai + 1 : 1], ii = ai > 0 ? ai + 2 : 2, item = toks[ii] || "";
+      var qty = 0, full = true;
+      var dmg = false;
+      for (var i = ii + 1; i < toks.length; i++) { var m = /^(\d[\d,]*)(\s*.*)$/.exec(toks[i]); if (m && !/\d{4}/.test(toks[i])) { qty = num(m[1].replace(/,/g, "")); var u = m[2] + " " + (toks[i + 1] || ""); full = !/ເປົ່າ/.test(u); dmg = /ເສຍ|ແຕກ|ຊຳລຸດ/.test(u); break; } }
+      var dt = laoDateTime(c), st = /ຮັບແລ້ວ|ສຳເລັດ|ຍົກເລີກ|ລໍຖ້າ[^\t\n]*/.exec(c);
+      return { id: id, from: from || "", to: to || "", item: item, qty: qty, full: full, dmg: dmg, date: dt && dt.date, time: dt && dt.time, status: st ? st[0] : "" };
+    }).filter(function (t) { return t.qty > 0 && t.date; });
+  }
+  // group transfers into delivery rounds per vehicle/day: a load (→ truck, full) starts a trip; full deliveries (truck → place) add to it
+  function transferTrips(transfers, cfg) {
+    var E = cfg.erp || DEFAULT_CONFIG.erp, tmap = E.transferVehicleMap || {}, excl = E.transferExcludeDest || [], by = {}, unmapped = {}, seen = {}, skipped = 0;
+    function vehOf(name) {
+      name = String(name || "").trim(); if (tmap[name]) return tmap[name];
+      for (var k in tmap) if (k.length >= 3 && name.indexOf(k) >= 0) return tmap[k];
+      return null;
+    }
+    function isExcl(place) { return excl.some(function (k) { return k && place.indexOf(k) >= 0; }); }
+    (transfers || []).forEach(function (t) {
+      if (seen[t.id]) return; seen[t.id] = 1;
+      if (!statusOk(t.status)) { skipped++; return; }
+      var vf = vehOf(t.from), vt = vehOf(t.to), veh = vf || vt;
+      if (!veh || (vf && vt) || !vehicle(cfg, veh)) { var u = t.from + " → " + t.to; if (!veh) unmapped[u] = (unmapped[u] || 0) + 1; return; }
+      (by[t.date + "_" + veh] = by[t.date + "_" + veh] || []).push({ t: t, out: !!vf });
+    });
+    var items = Object.keys(by).sort().map(function (k) {
+      var list = by[k].sort(function (a, b) { return a.t.time < b.t.time ? -1 : 1; }), trips = [], cur = null, notes = [];
+      list.forEach(function (x) {
+        var t = x.t;
+        if (t.dmg) { notes.push(t.time + " ຕຸກເສຍ " + t.qty + " (" + (x.out ? t.to : t.from) + ")"); return; }
+        if (!t.full) { if (E.countEmptyRounds && x.out) { trips.push({ qty: t.qty, empty: true }); notes.push(t.time + " ຕຸກເປົ່າ " + t.qty + " → " + t.to); } return; }
+        if (!x.out) { cur = { qty: 0 }; trips.push(cur); notes.push(t.time + " ໂຫຼດ " + t.qty + " ຈາກ " + t.from); return; }
+        if (isExcl(t.to)) { notes.push(t.time + " ສົ່ງຄືນ " + t.qty + " → " + t.to + " (ບໍ່ນັບ)"); return; }
+        if (!cur) { cur = { qty: 0 }; trips.push(cur); }
+        cur.qty += t.qty; notes.push(t.time + " ສົ່ງ " + t.qty + " → " + t.to);
+      });
+      var rounds = trips.map(function (x) { return x.qty; }).filter(function (q) { return q > 0; });
+      var p = k.split("_");
+      var moves = list.map(function (x) { return { id: x.t.id, time: x.t.time, out: x.out, place: x.out ? x.t.to : x.t.from, qty: x.t.qty, full: x.t.full, dmg: !!x.t.dmg }; });
+      return { date: p[0], veh: p.slice(1).join("_"), rounds: rounds, bills: list.length, detail: notes.join(" · "), over: rounds.length > 4, moves: moves };
+    });
+    return { items: items, unmapped: unmapped, lines: (transfers || []).length, skipped: skipped };
+  }
+  // Apply aggregated ERP totals: new → pending with no crew; pending → quantities updated (crew kept); approved & different → reported, not changed
+  function importErp(items, S, who, cfg) {
+    var res = { created: 0, updated: 0, same: 0, locked: [], skipped: 0 };
+    (items || []).slice(0, 2000).forEach(function (it) {
+      var v = vehicle(cfg, it.veh);
+      var big = v && v.type === "big";
+      if (!v || !DATE_RE.test(String(it.date)) || big !== !!it.rounds) { res.skipped++; return; }
+      var id = it.date + "_" + it.veh, cur = S.getEntry(id), q = {};
+      QTY.forEach(function (k) { q[k] = !big && num(it[k]) > 0 ? Math.round(num(it[k])) : null; });
+      q.rounds = [0, 1, 2, 3].map(function (i) { var x = big ? num((it.rounds || [])[i]) : 0; return x > 0 ? Math.round(x) : null; });
+      function sameQ(c) { return QTY.every(function (k) { return num(c[k]) === num(q[k]); }) && [0, 1, 2, 3].every(function (i) { return num((c.rounds || [])[i]) === num(q.rounds[i]); }); }
+      if (cur) {
+        var mv = it.moves ? JSON.stringify(it.moves) : null, mvChanged = mv !== null && mv !== JSON.stringify(cur.moves || []);
+        if (sameQ(cur)) {
+          if (cur.source !== "erp" || mvChanged) { cur.source = "erp"; cur.erpBills = it.bills || ""; if (mv !== null) cur.moves = it.moves; S.putEntry(cur); }
+          res.same++; return;
+        }
+        if (mvChanged) cur.moves = it.moves; // ເຂົ້າ-ອອກ ບໍ່ກະທົບເງິນ — ອັບເດດໄດ້ສະເໝີ
+        if (cur.status === "approved") { if (mvChanged) S.putEntry(cur); res.locked.push({ id: id, app: qtyText(cur), erp: qtyText(q) }); return; }
+        var before = qtyText(cur);
+        QTY.forEach(function (k) { cur[k] = q[k]; }); cur.rounds = q.rounds;
+        cur.note = (cur.note ? cur.note + " | " : "") + "ERP ປັບຈາກ " + before;
+        cur.note = cur.note.slice(-200);
+        var c = calc(cur, cfg); cur.total = Math.round(c.total); cur.perPerson = Math.round(c.perPerson * 100) / 100;
+        cur.source = "erp"; cur.erpBills = it.bills || ""; cur.updatedBy = who; cur.updatedAt = S.now();
+        S.putEntry(cur); res.updated++; return;
+      }
+      var e = { id: id, date: it.date, veh: it.veh, crew: [], rounds: q.rounds, adj: null, note: "", moves: it.moves || null, damages: [],
+        status: "pending", source: "erp", erpBills: it.bills || "", submittedBy: who, submittedAt: S.now(), updatedBy: who, updatedAt: S.now(), approvedBy: "" };
+      QTY.forEach(function (k) { e[k] = q[k]; });
+      e.total = Math.round(calc(e, cfg).total); e.perPerson = 0;
+      S.putEntry(e); res.created++;
+    });
+    S.log(who, "erp.import", JSON.stringify({ c: res.created, u: res.updated, s: res.same, l: res.locked.length }));
+    return res;
+  }
+
+  // ================= request handler =================
+  function handle(body, S) {
+    var a = body && body.action;
+    if (a === "names") return ok({ names: S.listStaff().filter(function (s) { return s.active; }).map(function (s) { return { nick: s.nick, veh: s.veh, role: s.role }; }) });
+    if (a === "login") {
+      var nick = String(body.nick || ""), pin = String(body.pin || "");
+      var fails = S.getFails(nick);
+      if (fails >= 5) return err("locked", "ໃສ່ PIN ຜິດຫຼາຍເທື່ອ — ລໍຖ້າ 15 ນາທີ ຫຼື ແຈ້ງຜູ້ຈັດການ");
+      var st = S.listStaff().filter(function (s) { return s.nick === nick && s.active; })[0];
+      if (!st || !st.pinHash || S.hash(st.salt + ":" + pin) !== st.pinHash) { S.setFails(nick, fails + 1); return err("bad_pin", "ຊື່ ຫຼື PIN ບໍ່ຖືກຕ້ອງ"); }
+      S.setFails(nick, 0);
+      S.log(nick, "login", "");
+      return ok({ token: makeToken(S, st.nick, st.role), me: pub(st) });
+    }
+    var me = readToken(S, body.token);
+    if (!me) return err("auth", "ກະລຸນາເຂົ້າສູ່ລະບົບໃໝ່");
+    var admin = me.role === "admin", cfg = S.getConfig(), today = S.today();
+
+    if (a === "boot") return ok({ me: pub(me), config: cfg, today: today, staff: S.listStaff().map(pub) });
+
+    if (a === "entries") {
+      var from = String(body.from || ""), to = String(body.to || "");
+      if (!DATE_RE.test(from) || !DATE_RE.test(to) || to < from) return err("bad_request");
+      if (!admin && from < addDays(today, -62)) from = addDays(today, -62);
+      var list = S.listEntries(from, to);
+      if (!admin) { var recent = addDays(today, -num(cfg.driverBackDays)); list = list.filter(function (e) { return e.crew.indexOf(me.nick) >= 0 || e.date >= recent; }); }
+      return ok({ entries: list, today: today });
+    }
+
+    if (a === "save") {
+      var e = cleanEntry(body.entry || {}, cfg);
+      if (!DATE_RE.test(e.date)) return err("bad_request", "ວັນທີບໍ່ຖືກ");
+      if (!vehicle(cfg, e.veh)) return err("bad_request", "ບໍ່ພົບລົດ " + e.veh);
+      var names = {}; S.listStaff().forEach(function (s) { names[s.nick] = 1; });
+      var unknown = e.crew.filter(function (n) { return !names[n]; }); if (unknown.length) return err("bad_request", "ບໍ່ພົບພະນັກງານ: " + unknown.join(", "));
+      var over = QTY.some(function (k) { return num(e[k]) > num(cfg.hardCap); }) || e.rounds.some(function (q) { return num(q) > num(cfg.hardCap); });
+      if (over && !admin) return err("too_big", "ຈຳນວນສູງເກີນ " + fmt(cfg.hardCap) + " — ກວດຄືນ ຫຼື ແຈ້ງຜູ້ຈັດການ");
+      var id = e.date + "_" + e.veh, cur = S.getEntry(id);
+      if (!admin) {
+        if (e.date > today || e.date < addDays(today, -num(cfg.driverBackDays))) return err("window", "ຄົນຂັບບັນທຶກໄດ້ສະເພາະມື້ນີ້ ແລະ ມື້ວານ — ມື້ອື່ນໃຫ້ແຈ້ງຜູ້ຈັດການ");
+        if (cur && cur.status === "approved") return err("locked", "ລາຍງານນີ້ອະນຸມັດແລ້ວ — ແກ້ໄດ້ສະເພາະຜູ້ຈັດການ");
+        if (cur && cur.crew.length && cur.crew.indexOf(me.nick) < 0) return err("taken", "ລົດນີ້ມີລາຍງານແລ້ວໂດຍ " + cur.submittedBy + " — ໃຫ້ລາວເພີ່ມຊື່ທ່ານ ຫຼື ແຈ້ງຜູ້ຈັດການ");
+        if (e.crew.indexOf(me.nick) < 0) e.crew.unshift(me.nick);
+        e.adj = cur ? cur.adj : null; // ຄົນຂັບປ່ຽນ ປັບເພີ່ມ/ຫັກ ບໍ່ໄດ້
+        if (cur && cur.source === "erp") { QTY.forEach(function (k) { e[k] = cur[k]; }); e.rounds = cur.rounds; } // ຈຳນວນຈາກ ERP ຄົນຂັບແກ້ບໍ່ໄດ້
+      }
+      e.source = cur ? (cur.source || "manual") : "manual"; e.erpBills = cur ? (cur.erpBills || "") : ""; e.moves = cur ? (cur.moves || null) : null;
+      if ((cur ? cur.updatedAt : "") !== String(body.base || "")) return err("conflict", "ມີຄົນອື່ນແກ້ລາຍການນີ້ກ່ອນ — ໂຫຼດຂໍ້ມູນໃໝ່ແລ້ວ ລອງອີກຄັ້ງ", { current: cur });
+      var c = calc(e, cfg);
+      if (!c.qty && !c.crew.length && !e.adj) return err("empty", "ໃສ່ຈຳນວນ ຫຼື ພະນັກງານກ່ອນ");
+      e.id = id; e.total = Math.round(c.total); e.perPerson = Math.round(c.perPerson * 100) / 100;
+      e.submittedBy = cur ? cur.submittedBy : me.nick;
+      e.submittedAt = cur ? cur.submittedAt : S.now();
+      e.updatedBy = me.nick; e.updatedAt = S.now();
+      if (admin) { e.status = body.status === "pending" ? "pending" : "approved"; e.approvedBy = e.status === "approved" ? me.nick : ""; }
+      else { e.status = "pending"; e.approvedBy = ""; }
+      S.putEntry(e);
+      S.log(me.nick, "save", id + " " + e.status + " " + e.total);
+      return ok({ entry: e });
+    }
+
+    if (a === "delete") {
+      var did = String(body.id || ""), d = S.getEntry(did);
+      if (!d) return ok({});
+      if (!admin && (d.status === "approved" || d.crew.indexOf(me.nick) < 0 || d.date < addDays(today, -num(cfg.driverBackDays)))) return err("forbidden", "ລຶບບໍ່ໄດ້ — ແຈ້ງຜູ້ຈັດການ");
+      if (d.updatedAt !== String(body.base || "")) return err("conflict", "ມີຄົນອື່ນແກ້ລາຍການນີ້ກ່ອນ — ໂຫຼດຂໍ້ມູນໃໝ່", { current: d });
+      S.deleteEntry(did); S.log(me.nick, "delete", did + " " + d.total);
+      return ok({});
+    }
+
+    if (a === "pin.change") {
+      var np0 = String(body.newPin || "");
+      if (!/^\d{4,8}$/.test(np0)) return err("bad_request", "PIN ໃໝ່ຕ້ອງເປັນຕົວເລກ 4–8 ຕົວ");
+      if (S.hash(me.salt + ":" + String(body.oldPin || "")) !== me.pinHash) return err("bad_pin", "PIN ເກົ່າບໍ່ຖືກ");
+      var everyone = S.listStaff(), mine = everyone.filter(function (s) { return s.nick === me.nick; })[0];
+      withPin(S, mine, np0); S.saveStaff(everyone); S.log(me.nick, "pin.change", "");
+      return ok({});
+    }
+
+    // ---- admin only below ----
+    if (!admin) return err("forbidden", "ສະເພາະຜູ້ຈັດການ");
+
+    if (a === "approve") {
+      var st2 = body.status === "pending" ? "pending" : "approved", done = [];
+      (body.ids || []).slice(0, 500).forEach(function (i) {
+        var x = S.getEntry(String(i)); if (!x || x.status === st2) return;
+        x.status = st2; x.approvedBy = st2 === "approved" ? me.nick : ""; x.updatedAt = S.now(); x.updatedBy = me.nick;
+        S.putEntry(x); done.push(x);
+      });
+      S.log(me.nick, "approve", done.length + " → " + st2);
+      return ok({ entries: done });
+    }
+    if (a === "payroll.get") return ok({ people: S.getPayroll(String(body.period || "")) || {} });
+    if (a === "payroll.set") {
+      if (!DATE_RE.test(String(body.period || ""))) return err("bad_request");
+      S.setPayroll(String(body.period), body.people || {}); S.log(me.nick, "payroll", body.period);
+      return ok({});
+    }
+    if (a === "config.save") {
+      var nc = sortTiers(JSON.parse(JSON.stringify(body.config || {}))), bad = validConfig(nc);
+      if (bad) return err("bad_request", bad);
+      S.setConfig(nc); S.log(me.nick, "config", "");
+      return ok({ config: nc });
+    }
+    if (a === "staff.save") {
+      var old = {}; S.listStaff().forEach(function (s) { old[s.nick] = s; });
+      var out = [], newPins = {}, seenN = {};
+      for (var k = 0; k < (body.staff || []).length; k++) {
+        var s = body.staff[k], nk = String(s.nick || "").trim();
+        if (!nk) continue;
+        if (/[|]/.test(nk) || nk.length > 30) return err("bad_request", "ຊື່ຫຼິ້ນບໍ່ຖືກ: " + nk);
+        if (seenN[nk]) return err("bad_request", "ຊື່ຊ້ຳ: " + nk); seenN[nk] = 1;
+        var row = { nick: nk, full: String(s.full || "").slice(0, 60), veh: String(s.veh || ""), role: s.role === "admin" ? "admin" : "driver", active: s.active !== false };
+        if (old[nk]) { row.salt = old[nk].salt; row.pinHash = old[nk].pinHash; }
+        else { var p = randPin(S, 4); withPin(S, row, p); newPins[nk] = p; }
+        out.push(row);
+      }
+      if (!out.some(function (s) { return s.role === "admin" && s.active; })) return err("bad_request", "ຕ້ອງມີຜູ້ຈັດການຢ່າງໜ້ອຍ 1 ຄົນ");
+      S.saveStaff(out); S.log(me.nick, "staff", Object.keys(newPins).join(","));
+      return ok({ staff: out.map(pub), newPins: newPins });
+    }
+    if (a === "staff.pin") {
+      var all = S.listStaff(), t = all.filter(function (s) { return s.nick === body.nick; })[0];
+      if (!t) return err("bad_request", "ບໍ່ພົບ");
+      var np = randPin(S, t.role === "admin" ? 6 : 4); withPin(S, t, np); S.saveStaff(all); S.setFails(t.nick, 0);
+      S.log(me.nick, "pin.reset", t.nick);
+      return ok({ nick: t.nick, pin: np });
+    }
+    if (a === "erp.import") return ok(importErp(body.items, S, me.nick, cfg));
+    if (a === "import") {
+      var n2 = 0;
+      (body.entries || []).slice(0, 1000).forEach(function (raw) {
+        var ee = cleanEntry(raw, cfg); if (!DATE_RE.test(ee.date) || !vehicle(cfg, ee.veh)) return;
+        ee.id = ee.date + "_" + ee.veh; if (S.getEntry(ee.id) && !body.overwrite) return;
+        var cc = calc(ee, cfg); ee.total = Math.round(cc.total); ee.perPerson = Math.round(cc.perPerson * 100) / 100;
+        ee.status = "approved"; ee.submittedBy = ee.updatedBy = ee.approvedBy = me.nick; ee.submittedAt = ee.updatedAt = S.now();
+        S.putEntry(ee); n2++;
+      });
+      S.log(me.nick, "import", String(n2));
+      return ok({ imported: n2 });
+    }
+    return err("bad_action");
+  }
+
+  // Store-level helpers so both stores seed identically
+  function seedStaff(S, adminPinLen) {
+    var pins = {};
+    var list = DEFAULT_STAFF.map(function (s) { var r = JSON.parse(JSON.stringify(s)); var p = randPin(S, r.role === "admin" ? adminPinLen : 4); pins[r.nick] = p; return withPin(S, r, p); });
+    return { list: list, pins: pins };
+  }
+
+  function placeSummary(entries) {
+    var by = {};
+    function P(name) { return by[name] || (by[name] = { place: name, fullOut: 0, fullIn: 0, emptyIn: 0, emptyOut: 0, dmgFull: 0, dmgEmpty: 0, days: {} }); }
+    (entries || []).forEach(function (e) {
+      (e.moves || []).forEach(function (m) {
+        var p = P(m.place); p.days[e.date] = 1;
+        if (m.dmg) p[m.full ? "dmgFull" : "dmgEmpty"] += num(m.qty); else p[(m.full ? "full" : "empty") + (m.out ? "Out" : "In")] += num(m.qty);
+      });
+      (e.damages || []).forEach(function (d) { var p = P(d.place || "(ບໍ່ລະບຸ)"); p.days[e.date] = 1; p[d.kind === "empty" ? "dmgEmpty" : "dmgFull"] += num(d.qty); });
+    });
+    return Object.keys(by).map(function (k) { var p = by[k]; p.days = Object.keys(p.days).length; return p; })
+      .sort(function (a, b) { return (b.fullOut + b.emptyIn) - (a.fullOut + a.emptyIn); });
+  }
+  return { DEFAULT_CONFIG: DEFAULT_CONFIG, placeSummary: placeSummary, DEFAULT_STAFF: DEFAULT_STAFF, calc: calc, tierIndex: tierIndex, tierRate: tierRate, warnings: warnings,
+    periodOf: periodOf, addDays: addDays, handle: handle, erpAggregate: erpAggregate, parseTransferRows: parseTransferRows, parseTransferText: parseTransferText, transferTrips: transferTrips, laoDateTime: laoDateTime, importErp: importErp, erpDate: erpDate, qtyText: qtyText, seedStaff: seedStaff, withPin: withPin, cleanEntry: cleanEntry, fmt: fmt };
+})();
+
+</script>
+<script>
+(function () {
+"use strict";
+// ===== ວາງ URL ຂອງ Apps Script Web App ຢູ່ນີ້ (ລົງທ້າຍ /exec). ປ່ອຍວ່າງ = ໂໝດທົດລອງ =====
+var APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby02fjJZMupkrNGBKBUB3sy6O5_hfDx2hCKVFpMkWnPWYUqyiVhcsqy77Tjc0KLNbth/exec";
+
+var SEED_ENTRIES = [];
+var C = VariCore, $ = function (s) { return document.querySelector(s); };
+function el(tag, attrs) {
+  var n = document.createElement(tag); attrs = attrs || {};
+  Object.keys(attrs).forEach(function (k) {
+    var v = attrs[k]; if (v == null || v === false) return;
+    if (k === "class") n.className = v; else if (k === "text") n.textContent = v;
+    else if (k.slice(0, 2) === "on") n.addEventListener(k.slice(2), v); else n.setAttribute(k, v === true ? "" : v);
+  });
+  for (var i = 2; i < arguments.length; i++) [].concat(arguments[i]).forEach(function (c) { if (c != null && c !== false) n.append(c.nodeType ? c : String(c)); });
+  return n;
+}
+var fmt = C.fmt, fmtDash = function (n) { return Math.round(n) ? fmt(n) : "-"; };
+var num = function (v) { var x = Number(v); return isFinite(x) ? x : 0; };
+var clone = function (o) { return JSON.parse(JSON.stringify(o)); };
+var DAYS = ["ອາທິດ", "ຈັນ", "ອັງຄານ", "ພຸດ", "ພະຫັດ", "ສຸກ", "ເສົາ"];
+var dow = function (s) { var p = s.split("-"); return new Date(Date.UTC(+p[0], +p[1] - 1, +p[2])).getUTCDay(); };
+var dm = function (s) { return s.slice(8, 10) + "/" + s.slice(5, 7); };
+var dmy = function (s) { return dm(s) + "/" + s.slice(0, 4); };
+var range = function (a, b) { var o = []; for (var s = a; s <= b; s = C.addDays(s, 1)) o.push(s); return o; };
+function lsGet(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } }
+function lsSet(k, v) { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+function toast(m) { var t = $("#toast"); t.textContent = m; t.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(function () { t.hidden = true; }, 2600); }
+
+/* ================= demo backend (browser only) ================= */
+function sha256(ascii) { // compact SHA-256 over UTF-8
+  function r(v, a) { return (v >>> a) | (v << (32 - a)); }
+  var bytes = unescape(encodeURIComponent(ascii)), res = "", i, j, w = [], H = [], K = [], primes = [], isC = {};
+  for (var c = 2; primes.length < 64; c++) if (!isC[c]) { primes.push(c); for (i = c * c; i < 313; i += c) isC[i] = 1; }
+  primes.forEach(function (p, k) { K[k] = (Math.pow(p, 1 / 3) * 4294967296) | 0; if (k < 8) H[k] = (Math.pow(p, 1 / 2) * 4294967296) | 0; });
+  var L = bytes.length * 8; bytes += "\x80"; while (bytes.length % 64 - 56) bytes += "\x00";
+  for (i = 0; i < bytes.length; i++) { j = bytes.charCodeAt(i); w[i >> 2] |= j << ((3 - i) % 4) * 8; }
+  w[w.length] = (L / 4294967296) | 0; w[w.length] = L;
+  for (j = 0; j < w.length;) {
+    var W = w.slice(j, j += 16), old = H.slice(0);
+    for (i = 0; i < 64; i++) {
+      var w15 = W[i - 15], w2 = W[i - 2], a = H[0], e = H[4];
+      var t1 = H[7] + (r(e, 6) ^ r(e, 11) ^ r(e, 25)) + ((e & H[5]) ^ (~e & H[6])) + K[i] +
+        (W[i] = i < 16 ? W[i] : (W[i - 16] + (r(w15, 7) ^ r(w15, 18) ^ (w15 >>> 3)) + W[i - 7] + (r(w2, 17) ^ r(w2, 19) ^ (w2 >>> 10))) | 0);
+      var t2 = (r(a, 2) ^ r(a, 13) ^ r(a, 22)) + ((a & H[1]) ^ (a & H[2]) ^ (H[1] & H[2]));
+      H = [(t1 + t2) | 0].concat(H); H[4] = (H[4] + t1) | 0; H.length = 8;
+    }
+    for (i = 0; i < 8; i++) H[i] = (H[i] + old[i]) | 0;
+  }
+  for (i = 0; i < 8; i++) for (j = 3; j + 1; j--) { var b = (H[i] >> (j * 8)) & 255; res += (b < 16 ? "0" : "") + b.toString(16); }
+  return res;
+}
+function laoTime(iso) { if (!iso) return ""; var d = new Date(new Date(iso).getTime() + 7 * 3600e3); return isNaN(d) ? "" : d.toISOString().slice(11, 16); }
+function laoToday() { var d = new Date(Date.now() + 7 * 3600e3); return d.toISOString().slice(0, 10); }
+function DemoStore() {
+  var KEY = "vari_trucks_demo_v1", st = lsGet(KEY);
+  var self = this;
+  this.hash = sha256; this.hmac = function (s) { return sha256("demo-secret|" + s); };
+  this.randomId = function () { return Math.random().toString(36).slice(2) + Date.now().toString(36); };
+  this.randInt = function (n) { return Math.floor(Math.random() * n); };
+  this.now = function () { return new Date().toISOString(); };
+  this.today = laoToday;
+  if (!st) {
+    st = { config: clone(C.DEFAULT_CONFIG), entries: {}, payroll: {}, fails: {} };
+    st.staff = C.DEFAULT_STAFF.map(function (s) { return C.withPin(self, clone(s), s.role === "admin" ? "000000" : "1234"); });
+    var t = laoToday();
+    SEED_ENTRIES.forEach(function (e) { var x = clone(e); var c = C.calc(x, st.config); x.id = x.date + "_" + x.veh; x.total = Math.round(c.total); x.perPerson = c.perPerson; x.status = "approved"; x.submittedBy = x.updatedBy = x.approvedBy = "admin"; x.submittedAt = x.updatedAt = "2026-09-27T00:00:00.000Z"; st.entries[x.id] = x; });
+    [["5311", ["ຊີບ", "ຫວານ"], { hh: 138, org: 12 }], ["6097", ["ໂກ້", "ອ່າຍ", "ນາວ"], { org: 262 }], ["6096", ["ລຸນ"], { hh: 97 }]].forEach(function (d) {
+      var x = C.cleanEntry(Object.assign({ date: t, veh: d[0], crew: d[1] }, d[2]), st.config), c = C.calc(x, st.config);
+      x.id = t + "_" + d[0]; x.total = Math.round(c.total); x.perPerson = c.perPerson; x.status = "pending"; x.submittedBy = x.updatedBy = d[1][0]; x.submittedAt = x.updatedAt = new Date().toISOString(); x.approvedBy = ""; x.note = "ຕົວຢ່າງ";
+      st.entries[x.id] = x;
+    });
+  }
+  function save() { lsSet(KEY, st); }
+  this.getFails = function (n) { return st.fails[n] || 0; }; this.setFails = function (n, v) { st.fails[n] = v; save(); };
+  this.log = function () {};
+  this.getConfig = function () { return clone(st.config); }; this.setConfig = function (c) { st.config = clone(c); save(); };
+  this.listStaff = function () { return st.staff; }; this.saveStaff = function (l) { st.staff = clone(l); save(); };
+  this.getEntry = function (id) { return st.entries[id] ? clone(st.entries[id]) : null; };
+  this.listEntries = function (a, b) { return Object.keys(st.entries).map(function (k) { return st.entries[k]; }).filter(function (e) { return e.date >= a && e.date <= b; }).map(clone); };
+  this.putEntry = function (e) { st.entries[e.id] = clone(e); save(); }; this.deleteEntry = function (id) { delete st.entries[id]; save(); };
+  this.getPayroll = function (p) { return st.payroll[p] || null; }; this.setPayroll = function (p, v) { st.payroll[p] = clone(v); save(); };
+}
+var demo = null;
+function api(action, payload) {
+  var body = Object.assign({ action: action, token: S.token }, payload || {});
+  if (!APPS_SCRIPT_URL) {
+    demo = demo || new DemoStore();
+    return new Promise(function (res) { setTimeout(function () { res(clone(C.handle(clone(body), demo))); }, 120); });
+  }
+  return fetch(APPS_SCRIPT_URL, { method: "POST", body: JSON.stringify(body), redirect: "follow" })
+    .then(function (r) { return r.json(); })
+    .then(function (r) { setNet(true); return r; })
+    .catch(function () { setNet(false); return { ok: false, error: "network", message: "ເຊື່ອມຕໍ່ບໍ່ໄດ້ — ກວດອິນເຕີເນັດ ແລ້ວລອງໃໝ່" }; });
+}
+function setNet(ok) { $("#netDot").className = "dot " + (ok ? "ok" : "bad"); }
+
+/* ================= state ================= */
+var S = { token: null, me: null, cfg: null, staff: [], today: laoToday(), entries: {}, loaded: {}, tab: null,
+  form: null, tDate: null, period: null, payroll: {}, openPerson: null };
+var isAdmin = function () { return S.me && S.me.role === "admin"; };
+var vehName = function (id) { var v = (S.cfg.vehicles || []).filter(function (x) { return x.id === id; })[0]; return v ? v.name : id; };
+var staffActive = function () { return S.staff.filter(function (s) { return s.active && s.role !== "admin"; }); };
+var eid = function (d, v) { return d + "_" + v; };
+
+function handleErr(r) {
+  if (r.error === "auth") { logout(true); return; }
+  if (r.error === "conflict" && r.current) { S.entries[r.current.id] = r.current; }
+  toast(r.message || ("ຜິດພາດ: " + r.error));
+}
+
+/* ================= login ================= */
+var loginState = { nick: null, pin: "" };
+function showLogin() {
+  $("#appScreen").hidden = true; $("#loginScreen").hidden = false;
+  if (!APPS_SCRIPT_URL) { var d = $("#demoNote"); d.hidden = false; d.textContent = "ໂໝດທົດລອງ (ຍັງບໍ່ໄດ້ເຊື່ອມ Google Sheets) — PIN ຄົນຂັບ 1234 · admin 000000. ຂໍ້ມູນເກັບໃນເຄື່ອງນີ້ເທົ່ານັ້ນ."; }
+  api("names").then(function (r) {
+    var g = $("#nameGrid"); g.replaceChildren();
+    if (!r.ok) { $("#loginErr").textContent = r.message || "ໂຫຼດລາຍຊື່ບໍ່ໄດ້"; return; }
+    var last = lsGet("vari_trucks_last");
+    r.names.sort(function (a, b) { return (a.role === "admin") - (b.role === "admin"); }).forEach(function (n) {
+      g.append(el("button", { class: n.role === "admin" ? "adm" : "", "aria-pressed": loginState.nick === n.nick || (!loginState.nick && last === n.nick), onclick: function () { loginState.nick = n.nick; loginState.pin = ""; $("#loginErr").textContent = ""; showLoginSel(); } }, n.role === "admin" ? "ຜູ້ຈັດການ (admin)" : n.nick));
+    });
+    if (!loginState.nick && last && r.names.some(function (n) { return n.nick === last; })) loginState.nick = last;
+    showLoginSel();
+  });
+  var kp = $("#keypad"); kp.replaceChildren();
+  ["1", "2", "3", "4", "5", "6", "7", "8", "9", "ລຶບ", "0", "ເຂົ້າ"].forEach(function (k) {
+    kp.append(el("button", { class: isNaN(k) ? "fn" : "", onclick: function () { keyPin(k); } }, k));
+  });
+}
+function showLoginSel() {
+  document.querySelectorAll("#nameGrid button").forEach(function (b) { b.setAttribute("aria-pressed", b.textContent === loginState.nick || (loginState.nick === "admin" && b.classList.contains("adm"))); });
+  var d = $("#pinDots"); d.replaceChildren();
+  var len = loginState.nick === "admin" ? 6 : 4;
+  for (var i = 0; i < Math.max(len, loginState.pin.length); i++) d.append(el("span", { class: i < loginState.pin.length ? "on" : "" }));
+}
+function keyPin(k) {
+  if (!loginState.nick) { $("#loginErr").textContent = "ເລືອກຊື່ກ່ອນ"; return; }
+  if (k === "ລຶບ") loginState.pin = loginState.pin.slice(0, -1);
+  else if (k === "ເຂົ້າ") return doLogin();
+  else if (loginState.pin.length < 8) loginState.pin += k;
+  showLoginSel();
+  if (loginState.pin.length === (loginState.nick === "admin" ? 6 : 4)) doLogin();
+}
+function doLogin() {
+  var pin = loginState.pin; loginState.pin = ""; showLoginSel();
+  $("#loginErr").textContent = "ກຳລັງກວດ…";
+  api("login", { nick: loginState.nick, pin: pin }).then(function (r) {
+    if (!r.ok) { $("#loginErr").textContent = r.message || "ເຂົ້າບໍ່ໄດ້"; return; }
+    $("#loginErr").textContent = ""; lsSet("vari_trucks_last", loginState.nick);
+    S.token = r.token; lsSet("vari_trucks_session", { token: r.token }); boot();
+  });
+}
+function logout(expired) {
+  S.token = null; S.me = null; S.entries = {}; S.loaded = {}; lsSet("vari_trucks_session", null);
+  showLogin(); if (expired) $("#loginErr").textContent = "ໝົດເວລາ — ກະລຸນາເຂົ້າໃໝ່";
+}
+
+/* ================= boot ================= */
+function boot() {
+  api("boot").then(function (r) {
+    if (!r.ok) { handleErr(r); if (r.error !== "auth") showLogin(); return; }
+    S.me = r.me; S.cfg = r.config; S.staff = r.staff; S.today = r.today;
+    $("#loginScreen").hidden = true; $("#appScreen").hidden = false;
+    $("#whoName").textContent = S.me.role === "admin" ? S.me.full || "ຜູ້ຈັດການ" : S.me.nick;
+    $("#whoRole").textContent = isAdmin() ? "ຜູ້ຈັດການ" : "ຄົນຂັບ";
+    $("#todayLabel").textContent = "ວັນ" + DAYS[dow(S.today)] + " " + dmy(S.today);
+    if (!APPS_SCRIPT_URL) { var b = $("#banner"); b.hidden = false; b.textContent = "ໂໝດທົດລອງ — ຂໍ້ມູນເກັບໃນເຄື່ອງນີ້ເທົ່ານັ້ນ. ໃສ່ APPS_SCRIPT_URL ເພື່ອໃຊ້ງານຈິງ."; }
+    setNet(true);
+    S.period = C.periodOf(S.today, S.cfg.periodStartDay); S.tDate = S.today;
+    S.form = { date: S.today, veh: (S.me.veh && S.cfg.vehicles.some(function (v) { return v.id === S.me.veh; })) ? S.me.veh : S.cfg.vehicles[0].id };
+    var tabs = isAdmin() ? [["today", "ມື້ນີ້"], ["report", "ບັນທຶກ"], ["erp", "ERP"], ["people", "ລາຍຄົນ"], ["fleet", "ລາຍລົດ"], ["settings", "ຕັ້ງຄ່າ"]]
+                         : [["report", "ລາຍງານມື້ນີ້"], ["mine", "ຂອງຂ້ອຍ"]];
+    var nav = $("#tabs"); nav.replaceChildren();
+    tabs.forEach(function (t) { nav.append(el("button", { role: "tab", "data-tab": t[0], onclick: function () { if (!leaveOk()) return; showTab(t[0]); } }, t[1])); });
+    showTab(tabs[0][0]);
+  });
+}
+function load(from, to, force) {
+  var key = from + "|" + to;
+  if (S.loaded[key] && !force) return Promise.resolve(true);
+  return api("entries", { from: from, to: to }).then(function (r) {
+    if (!r.ok) { handleErr(r); return false; }
+    Object.keys(S.entries).forEach(function (k) { var e = S.entries[k]; if (e.date >= from && e.date <= to) delete S.entries[k]; });
+    r.entries.forEach(function (e) { S.entries[e.id] = e; });
+    S.today = r.today || S.today; S.loaded[key] = Date.now(); return true;
+  });
+}
+function periodLoad(force) { var p = S.period; return load(p.start, p.end < S.today || isAdmin() ? p.end : S.today, force); }
+function inRange(a, b) { return Object.keys(S.entries).map(function (k) { return S.entries[k]; }).filter(function (e) { return e.date >= a && e.date <= b; }); }
+
+function showTab(t) {
+  S.tab = t;
+  document.querySelectorAll("#tabs button").forEach(function (b) { b.setAttribute("aria-selected", b.getAttribute("data-tab") === t); });
+  ["report", "mine", "today", "erp", "people", "fleet", "settings"].forEach(function (v) { $("#v-" + v).hidden = v !== t; });
+  render(true);
+}
+function render(fetch) {
+  var go = function () {
+    if (S.tab === "report") renderReport();
+    if (S.tab === "mine") renderMine();
+    if (S.tab === "today") renderToday();
+    if (S.tab === "people") renderPeople();
+    if (S.tab === "fleet") renderFleet();
+    if (S.tab === "settings") renderSettings();
+    if (S.tab === "erp") renderErpCfg();
+  };
+  if (!fetch) return go();
+  var p;
+  if (S.tab === "today") p = load(C.addDays(S.tDate, -7), S.tDate);
+  else if (S.tab === "report") p = load(C.addDays(S.form.date, -14), isAdmin() ? S.form.date : S.today).then(function () { return isAdmin() ? true : periodLoad(); });
+  else if (S.tab === "settings" || S.tab === "erp") p = Promise.resolve();
+  else p = periodLoad();
+  go(); p.then(go);
+}
+setInterval(function () { if (document.visibilityState === "visible" && S.me && (S.tab === "today" || S.tab === "report") && !(S.form && S.form.dirty)) { S.loaded = {}; render(true); } }, 60000);
+
+/* ================= report form ================= */
+function curEntry() { return S.entries[eid(S.form.date, S.form.veh)] || null; }
+function draftKey() { return "vari_trucks_draft_" + eid(S.form.date, S.form.veh); }
+function loadDraft() {
+  var e = curEntry(), d = lsGet(draftKey());
+  S.form.base = e ? e.updatedAt : "";
+  S.form.draft = (d && d.base === S.form.base) ? d.draft : (e ? clone(e) : { date: S.form.date, veh: S.form.veh, crew: [], rounds: [null, null, null, null], note: "" });
+  if (!S.form.draft.rounds) S.form.draft.rounds = [null, null, null, null];
+  if ((!e || !e.crew.length) && !isAdmin() && S.form.draft.crew.indexOf(S.me.nick) < 0) S.form.draft.crew.unshift(S.me.nick);
+  S.form.dirty = !!(d && d.base === S.form.base); S.form.confirm = false; S.form.delArm = false;
+  S.form.loadedFor = eid(S.form.date, S.form.veh) + "|" + S.form.base;
+}
+function touch() { S.form.dirty = true; lsSet(draftKey(), { base: S.form.base, draft: S.form.draft }); }
+function leaveOk() {
+  if (!S.form || !S.form.dirty || S.tab !== "report") return true;
+  if (S.form.leaveArm) { S.form.leaveArm = false; return true; }
+  S.form.leaveArm = true; setTimeout(function () { if (S.form) S.form.leaveArm = false; }, 3000);
+  toast("ຍັງບໍ່ໄດ້ສົ່ງ (ຮ່າງຖືກເກັບໄວ້) — ກົດອີກເທື່ອເພື່ອອອກ"); return false;
+}
+function canEditEntry(e) {
+  if (isAdmin()) return true;
+  var minD = C.addDays(S.today, -num(S.cfg.driverBackDays));
+  if (S.form.date < minD || S.form.date > S.today) return false;
+  if (!e) return true;
+  return e.status !== "approved" && (!e.crew.length || e.crew.indexOf(S.me.nick) >= 0);
+}
+function statusPill(e) {
+  if (!e) return el("span", { class: "pill muted", text: "ຍັງບໍ່ລາຍງານ" });
+  var p = e.status === "approved" ? el("span", { class: "pill good", text: "ອະນຸມັດແລ້ວ" })
+    : !e.crew.length ? el("span", { class: "pill warn", text: "ລໍຖ້າທີມ" }) : el("span", { class: "pill pend", text: "ລໍຖ້າກວດ" });
+  return e.source === "erp" ? el("span", { class: "row", style: "gap:4px;display:inline-flex" }, p, el("span", { class: "pill muted", text: "ERP" })) : p;
+}
+function renderHeroMine() {
+  var h = $("#heroMine"); h.replaceChildren();
+  if (isAdmin()) { h.hidden = true; return; } h.hidden = false;
+  var me = S.me.nick, todayList = inRange(S.today, S.today).filter(function (e) { return e.crew.indexOf(me) >= 0; });
+  var t = 0, tq = 0; todayList.forEach(function (e) { var c = C.calc(e, S.cfg); t += c.perPerson; tq += c.qty; });
+  var per = inRange(S.period.start, S.today).filter(function (e) { return e.crew.indexOf(me) >= 0; });
+  var ap = 0, pe = 0, days = {}; per.forEach(function (e) { var c = C.calc(e, S.cfg); if (e.status === "approved") ap += c.perPerson; else pe += c.perPerson; days[e.date] = 1; });
+  h.append(
+    el("div", { class: "card" }, el("div", { class: "label", text: "ມື້ນີ້ຂ້ອຍໄດ້ (" + dm(S.today) + ")" }), el("div", { class: "big" }, fmt(t), el("small", { text: " ກີບ" })),
+      el("div", { class: "split" }, el("span", {}, "ສົ່ງໄດ້ ", el("b", { text: fmt(tq) }), " ໜ່ວຍ"), el("span", {}, todayList.length ? todayList.map(function (e) { return vehName(e.veh); }).join(", ") : "ຍັງບໍ່ມີລາຍງານ"))),
+    el("div", { class: "card" }, el("div", { class: "label", text: "ຮອບເດືອນນີ້ " + dm(S.period.start) + "–" + dm(S.period.end) }), el("div", { class: "big" }, fmt(ap + pe), el("small", { text: " ກີບ" })),
+      el("div", { class: "split" }, el("span", {}, "ອະນຸມັດ ", el("b", { text: fmt(ap) })), el("span", {}, "ລໍຖ້າ ", el("b", { text: fmt(pe) })), el("span", {}, el("b", { text: Object.keys(days).length }), " ມື້"))));
+}
+function renderReport() {
+  renderHeroMine();
+  var cfg = S.cfg, f = S.form;
+  // date row
+  var dr = $("#dateRow"); dr.replaceChildren();
+  if (isAdmin()) {
+    var di = el("input", { type: "date", value: f.date, "aria-label": "ວັນທີ", onchange: function (ev) { if (ev.target.value && leaveOk()) { f.date = ev.target.value; render(true); } } });
+    dr.append(el("button", { class: "btn sm", "aria-label": "ມື້ກ່ອນ", onclick: function () { if (leaveOk()) { f.date = C.addDays(f.date, -1); render(true); } } }, "‹"), di,
+      el("button", { class: "btn sm", "aria-label": "ມື້ຕໍ່ໄປ", onclick: function () { if (leaveOk()) { f.date = C.addDays(f.date, 1); render(true); } } }, "›"),
+      el("span", { class: "label spacer", text: "ວັນ" + DAYS[dow(f.date)] }));
+  } else {
+    var seg = el("div", { class: "seg" });
+    for (var i = 0; i <= num(cfg.driverBackDays); i++) (function (d) {
+      seg.append(el("button", { "aria-pressed": f.date === d, onclick: function () { if (leaveOk()) { f.date = d; render(false); } } }, d === S.today ? "ມື້ນີ້ " + dm(d) : "ມື້ວານ " + dm(d)));
+    })(C.addDays(S.today, -i));
+    dr.append(seg);
+  }
+  // vehicle buttons
+  var vl = $("#vehList"); vl.replaceChildren();
+  cfg.vehicles.forEach(function (v) {
+    var e = S.entries[eid(f.date, v.id)], c = e ? C.calc(e, cfg) : null;
+    vl.append(el("button", { class: "veh", "aria-pressed": v.id === f.veh, onclick: function () { if (!leaveOk()) return; f.veh = v.id; renderReport(); } },
+      el("b", { text: v.name }),
+      el("span", { class: "meta" }, el("span", { class: "dot " + (e ? (e.status === "approved" ? "ok" : "pend") : "") }), e ? (c.crew.join(", ") || "ບໍ່ມີຊື່") : "ຍັງບໍ່ລາຍງານ"),
+      el("span", { class: "amt" }, c ? fmt(c.total) + " ₭" : "—")));
+  });
+  var e = curEntry();
+  if (!f.draft || f.loadedFor.split("|")[0] !== eid(f.date, f.veh) || (!f.dirty && f.loadedFor !== eid(f.date, f.veh) + "|" + (e ? e.updatedAt : ""))) loadDraft();
+  var v = cfg.vehicles.filter(function (x) { return x.id === f.veh; })[0] || { type: "small", name: f.veh };
+  var editable = canEditEntry(e);
+  $("#formTitle").textContent = v.name + " · " + dmy(f.date);
+  var fs = $("#formState"); fs.replaceChildren(statusPill(e));
+  if (e) fs.append(" ", el("span", { class: "label", text: "ໂດຍ " + e.updatedBy }));
+  // crew chips
+  var cc = $("#crewChips"); cc.replaceChildren();
+  var staff = staffActive(), home = staff.filter(function (s) { return s.veh === f.veh; }), rest = staff.filter(function (s) { return s.veh !== f.veh; });
+  var extra = f.draft.crew.filter(function (n) { return !staff.some(function (s) { return s.nick === n; }); }).map(function (n) { return { nick: n }; });
+  home.concat(rest, extra).forEach(function (s) {
+    var self = !isAdmin() && s.nick === S.me.nick;
+    cc.append(el("button", { class: "chip" + (s.veh === f.veh ? " home" : ""), "aria-pressed": f.draft.crew.indexOf(s.nick) >= 0, disabled: !editable || self, title: self ? "ທ່ານຢູ່ໃນທີມສະເໝີ" : (s.full || ""),
+      onclick: function () { var c = f.draft.crew, i = c.indexOf(s.nick); if (i >= 0) c.splice(i, 1); else c.push(s.nick); touch(); renderFormBits(); } }, s.nick));
+  });
+  // quantities
+  var qg = $("#qtyGrid"); qg.replaceChildren();
+  var qtyLocked = !isAdmin() && e && e.source === "erp";
+  function fld(key, label, hint, idx) {
+    var val = idx != null ? f.draft.rounds[idx] : f.draft[key];
+    var inp = el("input", { type: "number", min: "0", step: "1", inputmode: "numeric", value: val == null ? "" : val, disabled: !editable || qtyLocked, "aria-label": label });
+    inp.addEventListener("input", function () { var x = inp.value === "" ? null : Number(inp.value); if (idx != null) f.draft.rounds[idx] = x; else f.draft[key] = x; f.confirm = false; touch(); renderFormBits(); });
+    return el("label", { class: "field" }, el("span", { class: "label", text: label }), inp, hint ? el("span", { class: "hint", text: hint }) : null);
+  }
+  if (v.type === "big") for (var r = 0; r < 4; r++) qg.append(fld("rounds", "ຕຸກ ຮອບ " + (r + 1), r === 0 ? "ຄິດເງິນກ້ອນຕໍ່ຮອບ" : null, r));
+  else qg.append(fld("hh", "ຕຸກ ຄົວເຮືອນ", "ຄິດຕາມຂັ້ນຕໍ່ມື້"), fld("org", "ຕຸກ ອົງກອນ", "ຄິດຕາມຂັ້ນຕໍ່ມື້"));
+  qg.append(fld("glass", "ຂວດແກ້ວ (ລັງ)"), fld("m250", "250ml (ແພັກ)"), fld("pack", "ນ້ຳແພັກ"));
+  renderDamages(v, editable);
+  $("#adjField").hidden = !isAdmin();
+  $("#fAdj").value = f.draft.adj == null ? "" : f.draft.adj; $("#fAdj").disabled = !editable;
+  $("#fNote").value = f.draft.note || ""; $("#fNote").disabled = !editable;
+  $("#approveWrap").hidden = !isAdmin();
+  $("#saveBtn").hidden = !editable; $("#copyCrew").hidden = !editable;
+  $("#saveBtn").textContent = isAdmin() ? "ບັນທຶກ" : qtyLocked ? "ຢືນຢັນທີມ" : (e ? "ອັບເດດລາຍງານ" : "ສົ່ງລາຍງານ");
+  if (qtyLocked && editable) fs.append(" ", el("span", { class: "label", text: "ຈຳນວນມາຈາກ ERP (" + (e.erpBills || "?") + " ບິນ) — ເລືອກທີມທີ່ຂຶ້ນລົດ ແລ້ວກົດ ຢືນຢັນທີມ" }));
+  $("#delBtn").hidden = !(e && editable) || qtyLocked; $("#delBtn").textContent = "ລຶບ";
+  if (!editable) {
+    var why = !isAdmin() && e && e.status === "approved" ? "ອະນຸມັດແລ້ວ — ແກ້ບໍ່ໄດ້. ຖ້າຜິດໃຫ້ແຈ້ງຜູ້ຈັດການ"
+      : !isAdmin() && e && e.crew.indexOf(S.me.nick) < 0 ? "ລົດນີ້ລາຍງານແລ້ວໂດຍ " + e.submittedBy + " — ຖ້າທ່ານຢູ່ໃນທີມ ໃຫ້ລາວເພີ່ມຊື່ທ່ານ" : "ມື້ນີ້ແກ້ບໍ່ໄດ້";
+    fs.append(" ", el("span", { class: "label", text: why }));
+  }
+  renderFormBits(); renderDayTable();
+  var mb = $("#movesBox"); mb.replaceChildren();
+  if (e && e.moves && e.moves.length) mb.append(el("div", { class: "card-b", style: "border-top:1px solid var(--line)" }, el("div", { class: "label", text: "ເຂົ້າ-ອອກ ຂອງມື້ນີ້ (ຈາກ ERP)" }), movesTable(e.moves, false)));
+}
+function depRate() { return S.cfg.depositPerBottle == null ? C.DEFAULT_CONFIG.depositPerBottle : num(S.cfg.depositPerBottle); }
+function movesTable(moves, withDate) {
+  var t = el("table", {}, el("thead", {}, el("tr", {}, (withDate ? ["ວັນທີ"] : []).concat(["ເວລາ", "ທິດທາງ", "ສະຖານທີ່", "ຕຸກ", "ຈຳນວນ", "ເລກ"]).map(function (h) { return el("th", { class: h === "ຈຳນວນ" ? "n" : "", text: h }); }))));
+  var tb = el("tbody");
+  moves.forEach(function (m) {
+    tb.append(el("tr", {}, withDate ? el("td", { text: dm(m.date) }) : null, el("td", { text: m.time }), el("td", { text: m.out ? "ລົດ → " : "→ ລົດ" }), el("td", { text: m.place }),
+      el("td", {}, el("span", { class: "pill " + (m.dmg ? "warn" : m.full ? "good" : "muted"), text: (m.dmg ? "ເສຍ " : "") + (m.full ? "ເຕັມ" : "ເປົ່າ") })), el("td", { class: "n", text: fmt(m.qty) }), el("td", { class: "label", text: m.id })));
+  });
+  t.append(tb); return el("div", { class: "tbl-wrap" }, t);
+}
+function renderDamages(v, editable) {
+  var box = $("#dmgBox"); box.replaceChildren();
+  if (v.type !== "big") return;
+  var f = S.form, list = f.draft.damages || (f.draft.damages = []), e = curEntry();
+  var places = {}; ((e && e.moves) || []).forEach(function (m) { places[m.place] = 1; });
+  inRange(C.addDays(S.today, -60), S.today).forEach(function (x) { (x.moves || []).forEach(function (m) { places[m.place] = 1; }); });
+  var dl = el("datalist", { id: "placeList" }, Object.keys(places).map(function (p) { return el("option", { value: p }); }));
+  var t = el("table", { class: "tier-edit" }, el("thead", {}, el("tr", {}, ["ສະຖານທີ່ (ໂຫຼດ/ລົງ)", "ຖັງ", "ຈຳນວນເສຍ", "ໝາຍເຫດ", ""].map(function (h) { return el("th", { text: h }); }))));
+  var tb = el("tbody");
+  list.forEach(function (d, i) {
+    tb.append(el("tr", {},
+      el("td", {}, el("input", { list: "placeList", value: d.place || "", disabled: !editable, placeholder: "ເຊັ່ນ ສາຂາ ໂນນຄໍ້", oninput: function (ev) { d.place = ev.target.value; touch(); } })),
+      el("td", {}, el("select", { disabled: !editable, onchange: function (ev) { d.kind = ev.target.value; touch(); } }, el("option", { value: "full", text: "ເຕັມ", selected: d.kind !== "empty" || null }), el("option", { value: "empty", text: "ເປົ່າ", selected: d.kind === "empty" || null }))),
+      el("td", {}, el("input", { type: "number", min: "0", inputmode: "numeric", value: d.qty || "", disabled: !editable, style: "max-width:90px", oninput: function (ev) { d.qty = Number(ev.target.value) || 0; touch(); } })),
+      el("td", {}, el("input", { value: d.note || "", disabled: !editable, placeholder: "ແຕກ / ຮົ່ວ / ຝາເສຍ", oninput: function (ev) { d.note = ev.target.value; touch(); } })),
+      el("td", {}, editable ? el("button", { class: "btn ghost sm", "aria-label": "ລຶບ", onclick: function () { list.splice(i, 1); touch(); renderDamages(v, editable); } }, "✕") : null)));
+  });
+  if (!list.length) tb.append(el("tr", {}, el("td", { colspan: 5, class: "label", text: "ບໍ່ມີຖັງເສຍ" })));
+  t.append(tb);
+  var tot = list.reduce(function (a, d) { return a + num(d.qty); }, 0);
+  box.append(el("div", { class: "stack", style: "gap:6px" },
+    el("div", { class: "row" }, el("span", { class: "label", text: "ຖັງເສຍຫາຍ ຕອນໂຫຼດ/ລົງສິນຄ້າ" + (tot ? " · ລວມ " + fmt(tot) + " ຖັງ" : "") }),
+      editable ? el("button", { class: "btn ghost sm spacer", onclick: function () { list.push({ place: "", kind: "empty", qty: 0, note: "" }); touch(); renderDamages(v, editable); } }, "+ ເພີ່ມຖັງເສຍ") : null),
+    dl, el("div", { class: "tbl-wrap" }, t), el("span", { class: "hint label", text: "ບໍ່ກະທົບເງິນຄ່າຮອບ — ໃຊ້ຕິດຕາມຖັງ. ຖ້າ ERP ມີລາຍການ 'ເສຍ' ຈະສະແດງໃນເຂົ້າ-ອອກອັດຕະໂນມັດ" })));
+}
+function ladder(qty, tiers, label, lump) {
+  var idx = C.tierIndex(qty, tiers), box = el("div", { class: "ladder" }, el("h3", { text: label })), rg = el("div", { class: "rungs" });
+  tiers.forEach(function (t, i) { var hi = i < tiers.length - 1 ? tiers[i + 1][0] - 1 : null;
+    rg.append(el("div", { class: "rung" + (i === idx ? " on" : "") }, el("span", { class: "r", text: fmt(t[1]) }), t[0] + (hi ? "–" + hi : "+"))); });
+  box.append(rg);
+  if (qty > 0 && idx < tiers.length - 1) {
+    var nx = tiers[idx + 1], need = nx[0] - qty, gain = lump ? nx[1] - tiers[idx][1] : nx[0] * nx[1] - qty * tiers[idx][1];
+    box.append(el("div", { class: "nudge", text: "ອີກ " + fmt(need) + " ຕຸກ ຂຶ້ນຂັ້ນ " + fmt(nx[1]) + " → +" + fmt(gain) + " ₭" }));
+  }
+  return box;
+}
+function renderFormBits() {
+  var f = S.form, cfg = S.cfg;
+  document.querySelectorAll("#crewChips .chip").forEach(function (b) { b.setAttribute("aria-pressed", f.draft.crew.indexOf(b.textContent) >= 0); });
+  var d = clone(f.draft); d.veh = f.veh; var c = C.calc(d, cfg), box = $("#resultBox"); box.replaceChildren();
+  box.append(el("div", { class: "label", text: "ຜົນຕອບແທນຂອງລົດຄັນນີ້" }), el("div", { class: "total-big" }, fmt(c.total), el("span", { class: "label", text: " ກີບ" })),
+    el("div", { class: "pp" }, el("span", { class: "label", text: c.crew.length ? "ຕໍ່ຄົນ (÷" + c.crew.length + ")" : "ຕໍ່ຄົນ" }), c.crew.length ? el("span", { class: "num", text: fmt(c.perPerson) }) : el("span", { class: "pill warn", text: "ຍັງບໍ່ໄດ້ເລືອກພະນັກງານ" })));
+  var ln = el("div", { class: "lines" });
+  if (!c.lines.length) ln.append(el("div", { class: "k", text: "ໃສ່ຈຳນວນ ແລ້ວລະບົບຈະຄິດໃຫ້" }));
+  c.lines.forEach(function (l) { ln.append(el("div", {}, el("span", { class: "k", text: l[0] }), el("span", { class: "num", text: fmt(l[1]) }))); });
+  box.append(ln);
+  if (c.type === "big") box.append(ladder(Math.max.apply(null, [0].concat(d.rounds.map(num))), cfg.bigTiers, "ຂັ້ນຕໍ່ຮອບ (ກີບ/ຮອບ) · ຮອບທີ່ຫຼາຍສຸດ", true));
+  else { box.append(ladder(num(d.hh), cfg.hhTiers, "ຂັ້ນ ຄົວເຮືອນ (ກີບ/ຕຸກ)")); if (num(d.org) > 0 || !num(d.hh)) box.append(ladder(num(d.org), cfg.orgTiers, "ຂັ້ນ ອົງກອນ (ກີບ/ຕຸກ)")); }
+  // warnings (need a tick before submitting)
+  var w = C.warnings(d, cfg).filter(function (x) { return x !== "ຍັງບໍ່ມີຊື່ພະນັກງານ" || isAdmin(); }), wb = $("#warnBox"); wb.replaceChildren();
+  if (w.length && c.qty) {
+    var cb = el("input", { type: "checkbox", checked: f.confirm || null, onchange: function (ev) { f.confirm = ev.target.checked; } });
+    wb.append(el("div", { class: "warnbox" }, el("b", { text: "ກວດກ່ອນສົ່ງ:" }), w.map(function (x) { return el("div", { text: "• " + x }); }), el("label", {}, cb, "ຂ້ອຍກວດແລ້ວ ຕົວເລກຖືກຕ້ອງ")));
+  }
+}
+function renderDayTable() {
+  var f = S.form, t = $("#dayTable"); t.replaceChildren();
+  $("#dayTitle").textContent = "ລົດທຸກຄັນ · " + dmy(f.date);
+  t.append(el("thead", {}, el("tr", {}, ["ລົດ", "ທີມ", "ສະຖານະ", "ສິນຄ້າ", "ເງິນ"].map(function (h, i) { return el("th", { class: i >= 3 ? "n" : "", text: h }); }))));
+  var tb = el("tbody"), tot = 0, tq = 0;
+  S.cfg.vehicles.forEach(function (v) {
+    var e = S.entries[eid(f.date, v.id)]; if (!e) return;
+    var c = C.calc(e, S.cfg); tot += c.total; tq += c.qty;
+    tb.append(el("tr", { class: "click", onclick: function () { if (!leaveOk()) return; f.veh = v.id; renderReport(); window.scrollTo({ top: 0, behavior: "smooth" }); } },
+      el("td", { text: v.name }), el("td", { text: c.crew.join(", ") || "—" }), el("td", {}, statusPill(e)), el("td", { class: "n", text: fmt(c.qty) }), el("td", { class: "n", text: fmt(c.total) })));
+  });
+  if (!tb.children.length) tb.append(el("tr", {}, el("td", { colspan: 5, class: "empty", text: "ຍັງບໍ່ມີລາຍງານ" })));
+  else tb.append(el("tr", { class: "tot" }, el("td", { text: "ລວມ" }), el("td"), el("td"), el("td", { class: "n", text: fmt(tq) }), el("td", { class: "n", text: fmt(tot) })));
+  t.append(tb); $("#dayTotal").textContent = fmt(tot) + " ₭";
+}
+function saveReport() {
+  var f = S.form, d = clone(f.draft); d.date = f.date; d.veh = f.veh; d.note = $("#fNote").value.trim();
+  if (isAdmin()) d.adj = $("#fAdj").value === "" ? null : Number($("#fAdj").value);
+  var c = C.calc(d, S.cfg), w = C.warnings(d, S.cfg).filter(function (x) { return x !== "ຍັງບໍ່ມີຊື່ພະນັກງານ" || isAdmin(); });
+  if (!c.qty && !num(d.adj)) { toast("ໃສ່ຈຳນວນກ່ອນ"); return; }
+  if (w.length && !f.confirm) { toast("ກະລຸນາກວດ ແລະ ໝາຍຖືກ 'ຂ້ອຍກວດແລ້ວ' ກ່ອນ"); $("#warnBox").scrollIntoView({ block: "center" }); return; }
+  var btn = $("#saveBtn"); btn.disabled = true; btn.textContent = "ກຳລັງສົ່ງ…";
+  api("save", { entry: d, base: f.base, status: isAdmin() && !$("#fApprove").checked ? "pending" : "approved" }).then(function (r) {
+    btn.disabled = false;
+    if (!r.ok) { handleErr(r); if (r.error === "conflict") { lsSet(draftKey(), null); f.draft = null; } renderReport(); return; }
+    lsSet(draftKey(), null); S.entries[r.entry.id] = r.entry; f.draft = null; f.dirty = false;
+    toast(isAdmin() ? "ບັນທຶກແລ້ວ" : "ສົ່ງລາຍງານແລ້ວ — ໄດ້ " + fmt(r.entry.perPerson) + " ກີບ/ຄົນ (ລໍຖ້າກວດ)");
+    renderReport();
+  });
+}
+function deleteReport() {
+  var f = S.form, e = curEntry(); if (!e) return;
+  if (!f.delArm) { f.delArm = true; $("#delBtn").textContent = "ກົດອີກເທື່ອເພື່ອຢືນຢັນ"; return; }
+  api("delete", { id: e.id, base: e.updatedAt }).then(function (r) {
+    if (!r.ok) { handleErr(r); renderReport(); return; }
+    delete S.entries[e.id]; lsSet(draftKey(), null); f.draft = null; f.dirty = false; toast("ລຶບແລ້ວ"); renderReport();
+  });
+}
+$("#saveBtn").onclick = saveReport; $("#delBtn").onclick = deleteReport;
+$("#fAdj").oninput = function () { S.form.draft.adj = this.value === "" ? null : Number(this.value); touch(); renderFormBits(); };
+$("#fNote").oninput = function () { S.form.draft.note = this.value; touch(); };
+$("#copyCrew").onclick = function () {
+  var f = S.form;
+  for (var i = 1; i <= 14; i++) { var e = S.entries[eid(C.addDays(f.date, -i), f.veh)]; if (e && e.crew.length) { f.draft.crew = e.crew.slice(); if (!isAdmin() && f.draft.crew.indexOf(S.me.nick) < 0) f.draft.crew.unshift(S.me.nick); touch(); renderFormBits(); toast("ໃຊ້ທີມຂອງ " + dm(e.date)); return; } }
+  var home = staffActive().filter(function (s) { return s.veh === f.veh; }).map(function (s) { return s.nick; });
+  if (home.length) { f.draft.crew = home; if (!isAdmin() && home.indexOf(S.me.nick) < 0) f.draft.crew.unshift(S.me.nick); touch(); renderFormBits(); toast("ໃຊ້ທີມປະຈຳລົດ"); } else toast("ບໍ່ພົບທີມມື້ກ່ອນ");
+};
+
+/* ================= driver: mine ================= */
+function renderMine() {
+  var me = S.me.nick, p = S.period, list = inRange(p.start, p.end).filter(function (e) { return e.crew.indexOf(me) >= 0; }).sort(function (a, b) { return a.date < b.date ? 1 : -1; });
+  var ap = 0, pe = 0, q = 0, days = {};
+  list.forEach(function (e) { var c = C.calc(e, S.cfg); if (e.status === "approved") ap += c.perPerson; else pe += c.perPerson; q += c.qty; days[e.date] = 1; });
+  var k = $("#mineKpis"); k.replaceChildren();
+  [["ລວມຮອບນີ້ (ກີບ)", fmt(ap + pe), ""], ["ອະນຸມັດແລ້ວ", fmt(ap), ""], ["ລໍຖ້າກວດ", fmt(pe), pe ? "pend" : ""], ["ວັນເຮັດວຽກ", Object.keys(days).length, ""]].forEach(function (x) {
+    k.append(el("div", { class: "card kpi " + x[2] }, el("div", { class: "label", text: x[0] }), el("div", { class: "v", text: x[1] })));
+  });
+  $("#mineTitle").textContent = "ລາຍການຂອງຂ້ອຍ · " + dm(p.start) + "–" + dmy(p.end);
+  var t = $("#mineTable"); t.replaceChildren();
+  t.append(el("thead", {}, el("tr", {}, ["ວັນທີ", "ລົດ", "ທີມ", "ສະຖານະ", "ສິນຄ້າ", "ລົດໄດ້", "ຂ້ອຍໄດ້"].map(function (h, i) { return el("th", { class: i >= 4 ? "n" : "", text: h }); }))));
+  var tb = el("tbody");
+  list.forEach(function (e) { var c = C.calc(e, S.cfg);
+    tb.append(el("tr", {}, el("td", { text: DAYS[dow(e.date)].slice(0, 3) + " " + dm(e.date) }), el("td", { text: vehName(e.veh) }), el("td", { text: c.crew.join(", ") }), el("td", {}, statusPill(e)),
+      el("td", { class: "n", text: fmt(c.qty) }), el("td", { class: "n", text: fmt(c.total) }), el("td", { class: "n" }, el("b", { text: fmt(c.perPerson) })))); });
+  if (!list.length) tb.append(el("tr", {}, el("td", { colspan: 7, class: "empty", text: "ຍັງບໍ່ມີລາຍການໃນຮອບນີ້" })));
+  t.append(tb);
+}
+$("#pinChange").onclick = function () {
+  var o = $("#pinOld").value, n = $("#pinNew").value;
+  if (!/^\d{4,8}$/.test(n)) { toast("PIN ໃໝ່ຕ້ອງເປັນຕົວເລກ 4–8 ຕົວ"); return; }
+  api("pin.change", { oldPin: o, newPin: n }).then(function (r) { if (!r.ok) { handleErr(r); return; } $("#pinOld").value = $("#pinNew").value = ""; toast("ປ່ຽນ PIN ແລ້ວ"); });
+};
+
+/* ================= admin: today ================= */
+function renderToday() {
+  var d = S.tDate, cfg = S.cfg; $("#tDate").value = d;
+  var list = cfg.vehicles.map(function (v) { return { v: v, e: S.entries[eid(d, v.id)] }; });
+  var tot = 0, q = 0, rep = 0, pend = [];
+  list.forEach(function (x) { if (!x.e) return; var c = C.calc(x.e, cfg); tot += c.total; q += c.qty; rep++; if (x.e.status !== "approved") pend.push(x.e.id); });
+  var k = $("#todayKpis"); k.replaceChildren();
+  [["ເງິນຜົນຕອບແທນ (ກີບ)", fmt(tot), ""], ["ສິນຄ້າສົ່ງ (ໜ່ວຍ)", fmt(q), ""], ["ລົດລາຍງານແລ້ວ", rep + " / " + cfg.vehicles.length, rep < cfg.vehicles.length ? "" : ""], ["ລໍຖ້າອະນຸມັດ", pend.length, pend.length ? "pend" : ""]].forEach(function (x) {
+    k.append(el("div", { class: "card kpi " + x[2] }, el("div", { class: "label", text: x[0] }), el("div", { class: "v", text: x[1] })));
+  });
+  $("#approveAll").hidden = !pend.length; $("#approveAll").onclick = function () { approve(pend, "approved"); };
+  var t = $("#todayTable"); t.replaceChildren();
+  t.append(el("thead", {}, el("tr", {}, ["ລົດ", "ທີມ", "ສະຖານະ", "ລາຍງານໂດຍ", "ສິນຄ້າ", "ເງິນ", "ຕໍ່ຄົນ", ""].map(function (h, i) { return el("th", { class: i >= 4 && i <= 6 ? "n" : "", text: h }); }))));
+  var tb = el("tbody");
+  list.forEach(function (x) {
+    var e = x.e, c = e ? C.calc(e, cfg) : null, w = e ? C.warnings(e, cfg) : [];
+    tb.append(el("tr", {},
+      el("td", {}, el("b", { text: x.v.name })), el("td", { text: e ? c.crew.join(", ") || "—" : "" }), el("td", {}, statusPill(e), w.length ? el("span", { class: "pill warn", title: w.join("\n"), text: "⚠ " + w.length }) : null),
+      el("td", { class: "label", text: e ? e.updatedBy + " " + laoTime(e.updatedAt) : "" }),
+      el("td", { class: "n", text: e ? fmt(c.qty) : "" }), el("td", { class: "n", text: e ? fmt(c.total) : "" }), el("td", { class: "n", text: e ? fmtDash(c.perPerson) : "" }),
+      el("td", {}, el("div", { class: "row" },
+        e && e.status !== "approved" ? el("button", { class: "btn good sm", onclick: function () { approve([e.id], "approved"); } }, "ອະນຸມັດ") : null,
+        e && e.status === "approved" ? el("button", { class: "btn ghost sm", onclick: function () { approve([e.id], "pending"); } }, "ຍົກເລີກອະນຸມັດ") : null,
+        el("button", { class: "btn sm", onclick: function () { S.form.date = d; S.form.veh = x.v.id; S.form.draft = null; showTab("report"); } }, e ? "ແກ້ໄຂ" : "ບັນທຶກແທນ")))));
+  });
+  t.append(tb);
+}
+function approve(ids, status) {
+  api("approve", { ids: ids, status: status }).then(function (r) {
+    if (!r.ok) { handleErr(r); return; }
+    r.entries.forEach(function (e) { S.entries[e.id] = e; }); toast(status === "approved" ? "ອະນຸມັດ " + r.entries.length + " ລາຍການ" : "ຍົກເລີກແລ້ວ"); render(false);
+  });
+}
+var moveT = function (d) { S.tDate = d; render(true); };
+$("#tPrev").onclick = function () { moveT(C.addDays(S.tDate, -1)); }; $("#tNext").onclick = function () { moveT(C.addDays(S.tDate, 1)); };
+$("#tToday").onclick = function () { moveT(S.today); }; $("#tDate").onchange = function () { if (this.value) moveT(this.value); };
+$("#tRefresh").onclick = function () { S.loaded = {}; render(true); };
+
+/* ================= admin: period summaries ================= */
+function periodRow(id) {
+  var r = $(id); r.replaceChildren();
+  r.append(el("button", { class: "btn sm", "aria-label": "ຮອບກ່ອນ", onclick: function () { S.period = C.periodOf(C.addDays(S.period.start, -1), S.cfg.periodStartDay); render(true); } }, "‹"),
+    el("b", { text: "ຮອບ " + dm(S.period.start) + " – " + dmy(S.period.end) }),
+    el("button", { class: "btn sm", "aria-label": "ຮອບຕໍ່ໄປ", onclick: function () { S.period = C.periodOf(C.addDays(S.period.end, 1), S.cfg.periodStartDay); render(true); } }, "›"),
+    el("button", { class: "btn ghost sm spacer", onclick: function () { S.loaded = {}; render(true); } }, "ໂຫຼດໃໝ່"));
+}
+function aggregate() {
+  var cfg = S.cfg, people = {}, byVD = {}, total = 0, pend = 0, unassigned = 0;
+  inRange(S.period.start, S.period.end).forEach(function (e) {
+    var c = C.calc(e, cfg); total += c.total; if (e.status !== "approved") pend += c.total; byVD[e.id] = { c: c, e: e };
+    if (!c.crew.length) unassigned += c.total;
+    c.crew.forEach(function (n) { var p = people[n] || (people[n] = { days: {}, ap: 0, pe: 0, rows: [] }); p.days[e.date] = 1; if (e.status === "approved") p.ap += c.perPerson; else p.pe += c.perPerson; p.rows.push({ e: e, c: c }); });
+  });
+  return { people: people, byVD: byVD, total: total, pend: pend, unassigned: unassigned };
+}
+function renderPeople() {
+  periodRow("#pPeriodRow");
+  var A = aggregate(), cfg = S.cfg;
+  if (S.payrollFor !== S.period.start) { S.payrollFor = S.period.start; S.payroll = {}; api("payroll.get", { period: S.period.start }).then(function (r) { if (r.ok) { S.payroll = r.people; if (S.tab === "people") renderPeople(); } }); }
+  var k = $("#peopleKpis"); k.replaceChildren();
+  [["ຜົນຕອບແທນລວມ (ກີບ)", fmt(A.total), ""], ["ໃນນັ້ນ ລໍຖ້າອະນຸມັດ", fmt(A.pend), A.pend ? "pend" : ""], ["ບໍ່ມີເຈົ້າຂອງ", fmt(A.unassigned), A.unassigned ? "warn" : ""], ["ຈຳນວນພະນັກງານ", Object.keys(A.people).length, ""]].forEach(function (x) {
+    k.append(el("div", { class: "card kpi " + x[2] }, el("div", { class: "label", text: x[0] }), el("div", { class: "v", text: x[1] })));
+  });
+  var t = $("#peopleTable"); t.replaceChildren(); var rows = [];
+  t.append(el("thead", {}, el("tr", {}, ["ຊື່", "ວັນ", "ອະນຸມັດ", "ລໍຖ້າ", "ມື້ຂາດ", "ມື້ລາ", "ມາເຊົ້າ", "ບໍ່ຂາດວຽກ", "ມາວຽກເຊົ້າ", "ປັບ", "ລວມຮັບ"].map(function (h, i) { return el("th", { class: i >= 1 ? "n" : "", text: h }); }))));
+  var tb = el("tbody"), names = staffActive().map(function (s) { return s.nick; });
+  Object.keys(A.people).forEach(function (n) { if (names.indexOf(n) < 0) names.push(n); });
+  var T = [0, 0, 0, 0, 0, 0, 0];
+  names.forEach(function (n) {
+    var p = A.people[n] || { days: {}, ap: 0, pe: 0, rows: [] }, pr = S.payroll[n] || {}, d = Object.keys(p.days).length;
+    var b1 = d && pr.absent === 0 ? num(cfg.bonus.full) : 0, b2 = d && pr.early ? num(cfg.bonus.early) : 0, adj = num(pr.adj), sum = p.ap + p.pe + b1 + b2 + adj;
+    [d, p.ap, p.pe, b1, b2, adj, sum].forEach(function (v, i) { T[i] += v; });
+    rows.push([n, d, Math.round(p.ap), Math.round(p.pe), pr.absent == null ? "" : pr.absent, pr.leave == null ? "" : pr.leave, pr.early ? "Y" : "", b1, b2, adj, Math.round(sum)]);
+    var inp = function (key) { return el("input", { class: "cell", type: "number", min: key === "adj" ? null : "0", value: pr[key] == null ? "" : pr[key], "aria-label": key + " " + n, onclick: function (ev) { ev.stopPropagation(); }, onchange: function (ev) { setPayroll(n, key, ev.target.value === "" ? null : Number(ev.target.value)); } }); };
+    var open = S.openPerson === n;
+    tb.append(el("tr", { class: "click", onclick: function () { S.openPerson = open ? null : n; renderPeople(); } },
+      el("td", {}, el("b", { text: n }), " ", el("span", { class: "label", text: open ? "▾" : "▸" })), el("td", { class: "n" + (d ? "" : " zero"), text: d }),
+      el("td", { class: "n", text: fmtDash(p.ap) }), el("td", { class: "n", text: fmtDash(p.pe) }), el("td", { class: "n" }, inp("absent")), el("td", { class: "n" }, inp("leave")),
+      el("td", { class: "n" }, el("select", { class: "cell", "aria-label": "ມາເຊົ້າ " + n, onclick: function (ev) { ev.stopPropagation(); }, onchange: function (ev) { setPayroll(n, "early", ev.target.value === "Y"); } }, el("option", { value: "", text: "–" }), el("option", { value: "Y", text: "Y", selected: pr.early || null }))),
+      el("td", { class: "n", text: fmtDash(b1) }), el("td", { class: "n", text: fmtDash(b2) }), el("td", { class: "n" }, inp("adj")), el("td", { class: "n" }, el("b", { text: fmt(sum) }))));
+    if (open) {
+      var dt = el("table", {}, el("thead", {}, el("tr", {}, ["ວັນທີ", "ລົດ", "ທີມ", "ສະຖານະ", "ລົດໄດ້", "ສ່ວນຂອງ " + n].map(function (h, i) { return el("th", { class: i >= 4 ? "n" : "", text: h }); }))));
+      var db = el("tbody");
+      p.rows.sort(function (a, b) { return a.e.date < b.e.date ? -1 : 1; }).forEach(function (x) { db.append(el("tr", { class: "click", onclick: function () { S.form.date = x.e.date; S.form.veh = x.e.veh; S.form.draft = null; showTab("report"); } },
+        el("td", { text: dm(x.e.date) }), el("td", { text: vehName(x.e.veh) }), el("td", { text: x.c.crew.join(", ") }), el("td", {}, statusPill(x.e)), el("td", { class: "n", text: fmt(x.c.total) }), el("td", { class: "n", text: fmt(x.c.perPerson) }))); });
+      if (!p.rows.length) db.append(el("tr", {}, el("td", { colspan: 6, class: "empty", text: "ບໍ່ມີລາຍການ" })));
+      dt.append(db); tb.append(el("tr", {}, el("td", { colspan: 11, class: "detail" }, el("div", { class: "tbl-wrap" }, dt))));
+    }
+  });
+  tb.append(el("tr", { class: "tot" }, el("td", { text: "ລວມ" }), el("td", { class: "n", text: T[0] }), el("td", { class: "n", text: fmt(T[1]) }), el("td", { class: "n", text: fmt(T[2]) }), el("td"), el("td"), el("td"),
+    el("td", { class: "n", text: fmtDash(T[3]) }), el("td", { class: "n", text: fmtDash(T[4]) }), el("td", { class: "n", text: fmtDash(T[5]) }), el("td", { class: "n", text: fmt(T[6]) })));
+  t.append(tb); S.peopleCsv = [["ຊື່", "ວັນ", "ອະນຸມັດ", "ລໍຖ້າ", "ມື້ຂາດ", "ມື້ລາ", "ມາເຊົ້າ", "ບໍ່ຂາດວຽກ", "ມາວຽກເຊົ້າ", "ປັບ", "ລວມຮັບ"]].concat(rows);
+}
+var payrollQ = Promise.resolve();
+function setPayroll(n, key, val) {
+  S.payroll[n] = Object.assign({}, S.payroll[n], (function () { var o = {}; o[key] = val; return o; })()); renderPeople();
+  var body = { period: S.period.start, people: clone(S.payroll) };
+  payrollQ = payrollQ.then(function () { return api("payroll.set", body); }).then(function (r) { if (r && !r.ok) handleErr(r); });
+}
+function weeks(p) { var o = [], s = p.start; while (s <= p.end) { var e = C.addDays(s, (7 - dow(s)) % 7); if (e > p.end) e = p.end; o.push([s, e]); s = C.addDays(e, 1); } return o; }
+function renderFleet() {
+  periodRow("#fPeriodRow");
+  var A = aggregate(), cfg = S.cfg, W = weeks(S.period);
+  var wt = $("#weekTable"); wt.replaceChildren();
+  wt.append(el("thead", {}, el("tr", {}, el("th", { text: "ລົດ" }), W.map(function (w) { return el("th", { class: "n", text: dm(w[0]) + "–" + dm(w[1]) }); }), el("th", { class: "n", text: "ລວມ" }), el("th", { class: "n", text: "ໜ່ວຍ" }))));
+  var tb = el("tbody"), col = W.map(function () { return 0; }), gt = 0, gq = 0;
+  cfg.vehicles.forEach(function (v) {
+    var rt = 0, rq = 0, cells = W.map(function (w, i) { var s = 0; range(w[0], w[1]).forEach(function (d) { var x = A.byVD[eid(d, v.id)]; if (x) { s += x.c.total; rq += x.c.qty; } }); col[i] += s; rt += s; return el("td", { class: "n" + (s ? "" : " zero"), text: fmtDash(s) }); });
+    gt += rt; gq += rq; tb.append(el("tr", {}, el("td", { text: v.name }), cells, el("td", { class: "n" }, el("b", { text: fmt(rt) })), el("td", { class: "n", text: fmt(rq) })));
+  });
+  tb.append(el("tr", { class: "tot" }, el("td", { text: "ລວມ" }), col.map(function (x) { return el("td", { class: "n", text: fmt(x) }); }), el("td", { class: "n", text: fmt(gt) }), el("td", { class: "n", text: fmt(gq) })));
+  wt.append(tb);
+  var g = $("#gridTable"); g.replaceChildren();
+  g.append(el("thead", {}, el("tr", {}, el("th", { text: "ວັນທີ" }), cfg.vehicles.map(function (v) { return el("th", { class: "n", text: v.name }); }), el("th", { class: "n", text: "ລວມ" }))));
+  var gb = el("tbody"), csv = [["date"].concat(cfg.vehicles.map(function (v) { return v.name; }), ["total"])];
+  var max = 1; Object.keys(A.byVD).forEach(function (k) { max = Math.max(max, A.byVD[k].c.total); });
+  range(S.period.start, S.period.end).forEach(function (d) {
+    var rt = 0, row = [d];
+    var cells = cfg.vehicles.map(function (v) {
+      var x = A.byVD[eid(d, v.id)], val = x ? x.c.total : 0; rt += val; row.push(Math.round(val));
+      var td = el("td", { class: "n" + (val ? "" : " zero"), title: x ? x.c.crew.join(", ") : "", style: "cursor:pointer", onclick: function () { S.form.date = d; S.form.veh = v.id; S.form.draft = null; showTab("report"); } },
+        x && x.e.status !== "approved" ? el("span", { class: "pill pend", text: fmt(val) }) : fmtDash(val));
+      if (val && x.e.status === "approved") td.style.background = "color-mix(in srgb, var(--accent) " + Math.round(6 + 22 * val / max) + "%, transparent)";
+      return td;
+    });
+    row.push(Math.round(rt)); csv.push(row);
+    gb.append(el("tr", {}, el("td", { text: DAYS[dow(d)].slice(0, 3) + " " + dm(d), style: dow(d) === 0 ? "color:var(--warn);font-weight:600" : null }), cells, el("td", { class: "n" }, el("b", { text: fmtDash(rt) }))));
+  });
+  g.append(gb); S.daysCsv = csv;
+  var bc = $("#bigCards"); bc.replaceChildren();
+  cfg.vehicles.filter(function (v) { return v.type === "big"; }).forEach(function (v) {
+    var ents = inRange(S.period.start, S.period.end).filter(function (e) { return e.veh === v.id; }).sort(function (a, b) { return a.date < b.date ? -1 : 1; });
+    var rows = C.placeSummary(ents), T = { fullOut: 0, emptyIn: 0, fullIn: 0, emptyOut: 0, dmgFull: 0, dmgEmpty: 0, bal: 0 }, dep = depRate();
+    var t = el("table", {}, el("thead", {}, el("tr", {}, ["ສະຖານທີ່", "ສົ່ງຕຸກເຕັມລົງ", "ຮັບຕຸກເປົ່າຄືນ", "ຕຸກຄ້າງສາຂາ (ເຕັມ − ເປົ່າ)", "ມັດຈຳ (₭)", "ໂຫຼດຕຸກເຕັມຂຶ້ນ", "ສົ່ງຕຸກເປົ່າລົງ", "ເສຍ ເຕັມ/ເປົ່າ", "ມື້"].map(function (h, i) { return el("th", { class: i ? "n" : "", text: h }); }))));
+    var tb = el("tbody");
+    rows.forEach(function (r) {
+      ["fullOut", "emptyIn", "fullIn", "emptyOut", "dmgFull", "dmgEmpty"].forEach(function (k) { T[k] += r[k]; });
+      var bal = r.fullOut - r.emptyIn; if (r.fullOut) T.bal += bal;
+      tb.append(el("tr", {}, el("td", {}, el("b", { text: r.place })), el("td", { class: "n", text: fmtDash(r.fullOut) }), el("td", { class: "n", text: fmtDash(r.emptyIn) }),
+        el("td", { class: "n" }, r.fullOut ? el("span", { class: "pill " + (bal > 0 ? "pend" : "good"), text: fmt(bal) }) : "-"),
+        el("td", { class: "n", title: bal < 0 ? "ຮັບເປົ່າຄືນຫຼາຍກວ່າທີ່ສົ່ງ — ມັດຈຳທີ່ຕ້ອງຄືນ" : "" }, r.fullOut && bal ? el("b", { text: fmt(bal * dep) }) : "-"),
+        el("td", { class: "n", text: fmtDash(r.fullIn) }), el("td", { class: "n", text: fmtDash(r.emptyOut) }),
+        el("td", { class: "n" }, r.dmgFull || r.dmgEmpty ? el("span", { class: "pill warn", text: fmt(r.dmgFull) + " / " + fmt(r.dmgEmpty) }) : "-"), el("td", { class: "n", text: r.days })));
+    });
+    if (!rows.length) tb.append(el("tr", {}, el("td", { colspan: 9, class: "empty", text: "ຍັງບໍ່ມີຂໍ້ມູນເຂົ້າ-ອອກ — ນຳເຂົ້າລາຍການໂອນ (TL-) ໃນແທັບ ERP" })));
+    else tb.append(el("tr", { class: "tot" }, el("td", { text: "ລວມ" }), el("td", { class: "n", text: fmt(T.fullOut) }), el("td", { class: "n", text: fmt(T.emptyIn) }), el("td", { class: "n", text: fmt(T.bal) }), el("td", { class: "n", text: fmt(T.bal * dep) }), el("td", { class: "n", text: fmt(T.fullIn) }), el("td", { class: "n", text: fmt(T.emptyOut) }), el("td", { class: "n", text: fmt(T.dmgFull) + " / " + fmt(T.dmgEmpty) }), el("td")));
+    t.append(tb);
+    var all = []; ents.forEach(function (e) { (e.moves || []).forEach(function (m) { all.push(Object.assign({ date: e.date }, m)); }); });
+    bc.append(el("div", { class: "card" }, el("div", { class: "card-h" }, el("h2", { text: v.name + " — ຕຸກເຕັມ / ຕຸກເປົ່າ ແຍກຕາມສາຂາ" }), el("span", { class: "label", text: dm(S.period.start) + "–" + dmy(S.period.end) + " · ມັດຈຳ " + fmt(dep) + " ₭/ຕຸກ" })),
+      el("div", { class: "tbl-wrap" }, t),
+      all.length ? el("details", { class: "card-b" }, el("summary", { class: "label", style: "cursor:pointer", text: "ລາຍລະອຽດເຂົ້າ-ອອກ ທັງໝົດ (" + all.length + " ລາຍການ)" }), movesTable(all, true)) : null));
+  });
+}
+var ENTRY_HEAD = ["ວັນທີ", "ລົດ", "ທີມ", "ຈຳນວນຄົນ", "ຄົວເຮືອນ", "ອົງກອນ", "ຂວດແກ້ວ", "250ml", "ແພັກ", "ຮອບ1", "ຮອບ2", "ຮອບ3", "ຮອບ4", "ປັບເພີ່ມ/ຫັກ", "ລວມເງິນ", "ຕໍ່ຄົນ", "ສະຖານະ", "ແຫຼ່ງ", "ໝາຍເຫດ"];
+function exportXlsx() {
+  var p = S.period, cfg = S.cfg;
+  var go = function () {
+    loadXlsx().then(function () {
+      renderPeople(); renderFleet(); // make sure the summary rows exist
+      var ents = inRange(p.start, p.end).sort(function (a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : a.veh < b.veh ? -1 : 1; });
+      var rows = [ENTRY_HEAD].concat(ents.map(function (e) { var c = C.calc(e, cfg), r = e.rounds || [];
+        return [e.date, e.veh, c.crew.join(", "), c.crew.length, e.hh, e.org, e.glass, e.m250, e.pack, r[0], r[1], r[2], r[3], e.adj, Math.round(c.total), Math.round(c.perPerson), e.status === "approved" ? "ອະນຸມັດແລ້ວ" : "ລໍຖ້າ", e.source || "manual", e.note || ""]; }));
+      var mv = [["ວັນທີ", "ເວລາ", "ເລກ", "ລົດ", "ທິດທາງ", "ສະຖານທີ່", "ຕຸກ", "ຈຳນວນ", "ໝາຍເຫດ"]], sum = [["ລົດ", "ສະຖານທີ່", "ສົ່ງຕຸກເຕັມລົງ", "ຮັບຕຸກເປົ່າຄືນ", "ຕຸກຄ້າງ", "ມັດຈຳ (₭)", "ໂຫຼດຕຸກເຕັມຂຶ້ນ", "ສົ່ງຕຸກເປົ່າລົງ", "ເສຍ (ເຕັມ)", "ເສຍ (ເປົ່າ)", "ມື້"]];
+      cfg.vehicles.filter(function (v) { return v.type === "big"; }).forEach(function (v) {
+        var ve = ents.filter(function (e) { return e.veh === v.id; });
+        ve.forEach(function (e) { (e.moves || []).forEach(function (m) { mv.push([e.date, m.time, m.id, v.id, m.out ? "ອອກຈາກລົດ" : "ເຂົ້າລົດ", m.place, (m.dmg ? "ເສຍ " : "") + (m.full ? "ເຕັມ" : "ເປົ່າ"), m.qty]); });
+          (e.damages || []).forEach(function (d) { mv.push([e.date, "", "ບັນທຶກເອງ", v.id, "ຖັງເສຍ", d.place, "ເສຍ " + (d.kind === "empty" ? "ເປົ່າ" : "ເຕັມ"), d.qty, d.note]); }); });
+        C.placeSummary(ve).forEach(function (r) { sum.push([v.id, r.place, r.fullOut, r.emptyIn, r.fullOut ? r.fullOut - r.emptyIn : "", r.fullOut ? (r.fullOut - r.emptyIn) * depRate() : "", r.fullIn, r.emptyOut, r.dmgFull, r.dmgEmpty, r.days]); });
+      });
+      var wb = XLSX.utils.book_new();
+      [["ລາຍການ", rows], ["ລາຍຄົນ", S.peopleCsv || []], ["ລາຍວັນ", S.daysCsv || []], ["ລົດໃຫຍ່ ຕາມສາຂາ", sum], ["ລົດໃຫຍ່ ເຂົ້າ-ອອກ", mv]].forEach(function (x) {
+        var ws = XLSX.utils.aoa_to_sheet(x[1]); ws["!cols"] = (x[1][0] || []).map(function () { return { wch: 14 }; }); XLSX.utils.book_append_sheet(wb, ws, x[0]);
+      });
+      XLSX.writeFile(wb, "Vari-ລົດຂົນສົ່ງ_" + p.start + "_" + p.end + ".xlsx");
+      toast("Export ແລ້ວ — " + ents.length + " ລາຍການ");
+    }).catch(function () { toast("Export ບໍ່ໄດ້ — ກວດອິນເຕີເນັດ"); });
+  };
+  periodLoad().then(go);
+}
+// rows from a sheet named ລາຍການ exported above → entries for the "import" action
+function entriesFromExport(rows) {
+  return rows.filter(function (r) { return r["ວັນທີ"] && r["ລົດ"]; }).map(function (r) {
+    return { date: C.erpDate(r["ວັນທີ"]), veh: String(r["ລົດ"]), crew: String(r["ທີມ"] || "").split(",").map(function (x) { return x.trim(); }).filter(Boolean),
+      hh: r["ຄົວເຮືອນ"], org: r["ອົງກອນ"], glass: r["ຂວດແກ້ວ"], m250: r["250ml"], pack: r["ແພັກ"], rounds: [r["ຮອບ1"], r["ຮອບ2"], r["ຮອບ3"], r["ຮອບ4"]], adj: r["ປັບເພີ່ມ/ຫັກ"], note: r["ໝາຍເຫດ"] || "" };
+  }).filter(function (e) { return e.date; });
+}
+function downloadCsv(name, rows) {
+  var csv = "﻿" + rows.map(function (r) { return r.map(function (x) { var s = String(x == null ? "" : x); return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; }).join(","); }).join("\n");
+  var a = el("a", { href: URL.createObjectURL(new Blob([csv], { type: "text/csv" })), download: name }); document.body.append(a); a.click(); a.remove();
+}
+$("#csvPeople").onclick = exportXlsx; $("#csvDays").onclick = exportXlsx;
+
+/* ================= admin: ERP import ================= */
+var xlsxReady = null;
+function loadXlsx() {
+  if (window.XLSX) return Promise.resolve();
+  return xlsxReady || (xlsxReady = new Promise(function (res, rej) {
+    var sc = document.createElement("script"); sc.src = "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js";
+    sc.onload = res; sc.onerror = function () { xlsxReady = null; rej(); }; document.head.append(sc);
+  }));
+}
+var erpState = null;
+$("#erpFile").onchange = function () {
+  var files = [].slice.call(this.files || []); if (!files.length) return;
+  $("#erpMsg").textContent = "ກຳລັງອ່ານ " + files.length + " ໄຟລ໌…"; $("#erpGo").hidden = true;
+  loadXlsx().then(function () {
+    return Promise.all(files.map(function (f) { return f.arrayBuffer().then(function (buf) {
+      var wb = XLSX.read(buf, { type: "array", cellDates: true });
+      if (wb.Sheets["ລາຍການ"] && wb.SheetNames.indexOf("ລາຍຄົນ") >= 0) return { appExport: XLSX.utils.sheet_to_json(wb.Sheets["ລາຍການ"], { defval: null, raw: true }) };
+      return XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { defval: null, raw: true });
+    }); }));
+  }).then(function (lists) {
+    var backups = lists.filter(function (l) { return l && l.appExport; });
+    if (backups.length) { importBackup([].concat.apply([], backups.map(function (b) { return entriesFromExport(b.appExport); }))); return; }
+    var sales = [], transfers = [];
+    lists.forEach(function (rows) { if (rows.length && ("ເລກທີບິນ" in rows[0])) sales = sales.concat(rows); else transfers = transfers.concat(C.parseTransferRows(rows)); });
+    if (!sales.length && !transfers.length) { $("#erpMsg").textContent = "ບໍ່ຮູ້ຈັກຮູບແບບໄຟລ໌ — ຕ້ອງເປັນລາຍງານການຂາຍ (ມີຖັນ ເລກທີບິນ) ຫຼື ລາຍການໂອນ (TL-)"; return; }
+    erpFromParts(sales, transfers);
+  }).catch(function () { $("#erpMsg").textContent = "ອ່ານໄຟລ໌ບໍ່ໄດ້ — ກວດອິນເຕີເນັດ (ຕ້ອງໂຫຼດຕົວອ່ານ Excel)"; });
+};
+function importBackup(list) {
+  if (!list.length) { $("#erpMsg").textContent = "ບໍ່ພົບລາຍການໃນໄຟລ໌ Export"; return; }
+  $("#erpMsg").textContent = "ໄຟລ໌ Export ຂອງແອັບ: " + list.length + " ລາຍການ — ກຳລັງນຳເຂົ້າ (ລາຍການທີ່ມີແລ້ວ ບໍ່ຖືກທັບ)…";
+  api("import", { entries: list }).then(function (r) { if (!r.ok) { handleErr(r); return; } S.loaded = {}; $("#erpMsg").textContent = "ນຳເຂົ້າຈາກໄຟລ໌ Export ແລ້ວ " + r.imported + " ລາຍການ (ຂ້າມ " + (list.length - r.imported) + " ທີ່ມີແລ້ວ)"; });
+}
+$("#tlRead").onclick = function () {
+  var t = C.parseTransferText($("#tlPaste").value);
+  if (!t.length) { $("#erpMsg").textContent = "ອ່ານບໍ່ອອກ — copy ທັງແຖວທີ່ຂຶ້ນຕົ້ນດ້ວຍ TL-"; return; }
+  erpFromParts([], t);
+};
+function erpFromParts(sales, transfers) {
+  var a = sales.length ? C.erpAggregate(sales, S.cfg) : { items: [], unmapped: {}, lines: 0, dups: 0 };
+  if (transfers.length && !Object.keys((S.cfg.erp || {}).transferVehicleMap || {}).length) { $("#erpMsg").textContent = "ຍັງບໍ່ໄດ້ຕັ້ງຊື່ລົດໃຫຍ່ໃນລາຍການໂອນ — ໄປທີ່ 'ກົດການອ່ານ ERP' ດ້ານລຸ່ມ > ລົດໃຫຍ່ — ຊື່ໃນລາຍການໂອນ ແລ້ວບັນທຶກ. ຊື່ລົດທີ່ພົບໃນຂໍ້ມູນ: " + Object.keys(transfers.reduce(function (o, t) { [t.from, t.to].forEach(function (n) { if (/ລົດ/.test(n)) o[n] = 1; }); return o; }, {})).join(", "); if (!sales.length) return; transfers = []; }
+  var b = transfers.length ? C.transferTrips(transfers, S.cfg) : { items: [], unmapped: {}, lines: 0, skipped: 0 };
+  var agg = { items: a.items.concat(b.items).sort(function (x, y) { return x.date < y.date ? -1 : x.date > y.date ? 1 : x.veh < y.veh ? -1 : 1; }),
+    unmapped: Object.assign({}, a.unmapped, b.unmapped), lines: a.lines + b.lines, dups: a.dups, tlSkipped: b.skipped };
+  if (!agg.items.length) { $("#erpMsg").textContent = "ບໍ່ພົບຍອດຂອງລົດທີ່ຕັ້ງໄວ້"; erpState = null; renderErpPreview(agg); return; }
+  var from = agg.items[0].date, to = agg.items[agg.items.length - 1].date;
+  $("#erpMsg").textContent = "ອ່ານແລ້ວ " + (a.lines ? fmt(a.lines) + " ລາຍການບິນ " : "") + (b.lines ? fmt(b.lines) + " ລາຍການໂອນ " : "") + "· " + dmy(from) + " – " + dmy(to);
+  load(from, to, true).then(function () { erpState = agg; renderErpPreview(agg); });
+}
+function erpAction(it) {
+  var cur = S.entries[eid(it.date, it.veh)], v = S.cfg.vehicles.filter(function (x) { return x.id === it.veh; })[0];
+  if (!v || (v.type === "big") !== !!it.rounds) return ["skip", "ຂ້າມ"];
+  if (!cur) return ["new", "ໃໝ່"];
+  var same = (it.rounds ? [0, 1, 2, 3].every(function (i) { return num((cur.rounds || [])[i]) === num(it.rounds[i]); })
+    : ["hh", "org", "glass", "m250", "pack"].every(function (k) { return num(cur[k]) === num(it[k]); }));
+  if (same) return ["same", "ຄືເກົ່າ"];
+  return cur.status === "approved" ? ["locked", "ອະນຸມັດແລ້ວ · ຕ່າງ"] : ["upd", "ອັບເດດ"];
+}
+function renderErpPreview(agg) {
+  var sm = $("#erpSummary"); sm.replaceChildren();
+  var cnt = { new: 0, upd: 0, same: 0, locked: 0, skip: 0 }, money = 0;
+  agg.items.forEach(function (it) { var a = erpAction(it)[0]; cnt[a]++; if (a === "new" || a === "upd") money += C.calc(it, S.cfg).total; });
+  var overs = agg.items.filter(function (it) { return it.over; });
+  var um = Object.keys(agg.unmapped);
+  sm.append.apply(sm, [el("div", { class: "kpis" },
+    [["ລາຍການໃໝ່", cnt.new, ""], ["ອັບເດດ", cnt.upd, cnt.upd ? "pend" : ""], ["ຄືເກົ່າ", cnt.same, ""], ["ອະນຸມັດແລ້ວແຕ່ຕ່າງ", cnt.locked, cnt.locked ? "warn" : ""]].map(function (x) {
+      return el("div", { class: "card kpi " + x[2] }, el("div", { class: "label", text: x[0] }), el("div", { class: "v", text: x[1] })); })),
+    um.length ? el("p", { class: "label", text: "ຂ້າມລົດທີ່ບໍ່ໄດ້ຈັບຄູ່ (ແຟຣນຊາຍ/ລົດຮ່ວມ ຯລຯ): " + um.map(function (k) { return k + " (" + agg.unmapped[k] + ")"; }).join(", ") }) : null,
+    agg.dups ? el("p", { class: "label", text: "ບິນຊ້ຳກັນລະຫວ່າງໄຟລ໌ " + fmt(agg.dups) + " ລາຍການ — ນັບຄັ້ງດຽວ" }) : null,
+    agg.tlSkipped ? el("p", { class: "label", text: "ລາຍການໂອນທີ່ຍັງບໍ່ 'ຮັບແລ້ວ' " + agg.tlSkipped + " ລາຍການ — ບໍ່ນັບ" }) : null,
+    overs.length ? el("div", { class: "warnbox", text: "ເກີນ 4 ຮອບຕໍ່ມື້ (ນັບໄດ້ແຕ່ 4 ຮອບທຳອິດ): " + overs.map(function (x) { return dm(x.date) + " " + vehName(x.veh); }).join(", ") }) : null].filter(Boolean));
+  var t = $("#erpTable"); t.replaceChildren();
+  t.append(el("thead", {}, el("tr", {}, ["ວັນທີ", "ລົດ", "ລາຍການ", "ຈຳນວນ (ERP)", "ເງິນ (ERP)", "ໃນແອັບຕອນນີ້", "ຜົນ"].map(function (h, i) { return el("th", { class: i === 2 || i === 4 ? "n" : "", text: h }); }))));
+  var tb = el("tbody");
+  agg.items.forEach(function (it) {
+    var a = erpAction(it), cur = S.entries[eid(it.date, it.veh)];
+    tb.append(el("tr", { title: it.detail || "" }, el("td", { text: dm(it.date) }), el("td", { text: vehName(it.veh) }), el("td", { class: "n", text: it.bills }),
+      el("td", {}, C.qtyText(it), it.detail ? el("div", { class: "label", style: "white-space:normal;max-width:420px", text: it.detail }) : null),
+      el("td", { class: "n", text: fmt(C.calc(it, S.cfg).total) }), el("td", { class: "label", text: cur ? C.qtyText(cur) + " · " + fmt(C.calc(cur, S.cfg).total) : "—" }),
+      el("td", {}, el("span", { class: "pill " + ({ new: "pend", upd: "pend", same: "muted", locked: "warn", skip: "muted" })[a[0]], text: a[1] }))));
+  });
+  t.append(tb);
+  var go = $("#erpGo"); go.hidden = !(cnt.new + cnt.upd + cnt.same); go.textContent = "ນຳເຂົ້າ " + (cnt.new + cnt.upd) + " ລາຍການ (" + fmt(money) + " ₭)";
+}
+$("#erpGo").onclick = function () {
+  if (!erpState) return; var b = this; b.disabled = true; b.textContent = "ກຳລັງນຳເຂົ້າ…";
+  var items = erpState.items, chunks = [], tot = { created: 0, updated: 0, same: 0, locked: [] };
+  for (var i = 0; i < items.length; i += 150) chunks.push(items.slice(i, i + 150));
+  chunks.reduce(function (p, ch) { return p.then(function () { return api("erp.import", { items: ch }).then(function (r) {
+    if (!r.ok) throw r; tot.created += r.created; tot.updated += r.updated; tot.same += r.same; tot.locked = tot.locked.concat(r.locked); }); }); }, Promise.resolve())
+  .then(function () {
+    b.disabled = false; toast("ນຳເຂົ້າແລ້ວ: ໃໝ່ " + tot.created + " · ອັບເດດ " + tot.updated + " · ຄືເກົ່າ " + tot.same);
+    var from = items[0].date, to = items[items.length - 1].date;
+    return load(from, to, true).then(function () { renderErpPreview(erpState);
+      if (tot.locked.length) $("#erpSummary").append(el("div", { class: "warnbox" }, el("b", { text: "ລາຍການທີ່ອະນຸມັດແລ້ວ ແຕ່ຍອດບໍ່ກົງ ERP (ບໍ່ໄດ້ປ່ຽນ — ກວດແລ້ວແກ້ເອງໃນ ບັນທຶກ):" }),
+        tot.locked.map(function (x) { return el("div", { text: x.id + " · ແອັບ: " + x.app + " · ERP: " + x.erp }); })));
+    });
+  }).catch(function (r) { b.disabled = false; handleErr(r || {}); });
+};
+function renderErpCfg() {
+  var cfg = S.erpDraft || (S.erpDraft = clone(S.cfg)); cfg.erp = Object.assign(clone(C.DEFAULT_CONFIG.erp), cfg.erp || {});
+  var E = cfg.erp, box = $("#erpCfg"); box.replaceChildren();
+  var mt = el("table", { class: "tier-edit" }, el("thead", {}, el("tr", {}, el("th", { text: "ຊື່ລົດໃນ ERP (ຖັນ ລົດຂົນສົ່ງ)" }), el("th", { text: "ລົດໃນແອັບ" }), el("th")))), mb = el("tbody");
+  Object.keys(E.vehicleMap).forEach(function (k) {
+    mb.append(el("tr", {}, el("td", {}, el("input", { value: k, onchange: function (ev) { var v = E.vehicleMap[k]; delete E.vehicleMap[k]; if (ev.target.value.trim()) E.vehicleMap[ev.target.value.trim()] = v; renderErpCfg(); } })),
+      el("td", {}, el("select", { onchange: function (ev) { E.vehicleMap[k] = ev.target.value; } }, cfg.vehicles.map(function (v) { return el("option", { value: v.id, text: v.name, selected: E.vehicleMap[k] === v.id || null }); }))),
+      el("td", {}, el("button", { class: "btn ghost sm", "aria-label": "ລຶບ", onclick: function () { delete E.vehicleMap[k]; renderErpCfg(); } }, "✕"))));
+  });
+  mt.append(mb);
+  var pt = el("table", { class: "tier-edit" }, el("thead", {}, el("tr", {}, el("th", { text: "ຄຳໃນຊື່ສິນຄ້າ (ວ່າງ = ອື່ນໆທັງໝົດ)" }), el("th", { text: "ນັບເປັນ" }), el("th")))), pb = el("tbody");
+  var F = [["18L", "ຕຸກ 18L (ແຍກ ຄົວເຮືອນ/ອົງກອນ)"], ["glass", "ຂວດແກ້ວ (ລັງ)"], ["m250", "250ml"], ["pack", "ນ້ຳແພັກ"]];
+  E.products.forEach(function (p, i) {
+    pb.append(el("tr", {}, el("td", {}, el("input", { value: p[0], oninput: function (ev) { p[0] = ev.target.value; } })),
+      el("td", {}, el("select", { onchange: function (ev) { p[1] = ev.target.value; } }, F.map(function (f) { return el("option", { value: f[0], text: f[1], selected: p[1] === f[0] || null }); }))),
+      el("td", {}, el("button", { class: "btn ghost sm", "aria-label": "ລຶບ", onclick: function () { E.products.splice(i, 1); renderErpCfg(); } }, "✕"))));
+  });
+  pt.append(pb);
+  box.append(
+    el("div", { class: "row" }, el("b", { text: "ຈັບຄູ່ລົດ" }), el("button", { class: "btn sm spacer", onclick: function () { E.vehicleMap["ຊື່ໃໝ່"] = cfg.vehicles[0].id; renderErpCfg(); } }, "+ ລົດ")), el("div", { class: "tbl-wrap" }, mt),
+    el("div", { class: "row" }, el("b", { text: "ປະເພດສິນຄ້າ (ກວດຈາກເທິງລົງລຸ່ມ)" }), el("button", { class: "btn sm spacer", onclick: function () { E.products.splice(E.products.length - 1, 0, ["", "pack"]); renderErpCfg(); } }, "+ ກົດ")), el("div", { class: "tbl-wrap" }, pt),
+    el("label", { class: "field" }, el("span", { class: "label", text: "ລາຄາຂາຍຍ່ອຍ 18L (ກີບ) — ຕ່ຳກວ່ານີ້ = ອົງກອນ/ຂາຍສົ່ງ" }), el("input", { type: "number", value: E.retailPrice, oninput: function (ev) { E.retailPrice = Number(ev.target.value); } })),
+    el("label", { class: "field" }, el("span", { class: "label", text: "ປະເພດລູກຄ້າທີ່ນັບເປັນ ຄົວເຮືອນ (ຂັ້ນດ້ວຍ ,)" }), el("input", { value: E.householdTypes.join(", "), oninput: function (ev) { E.householdTypes = ev.target.value.split(",").map(function (x) { return x.trim(); }).filter(Boolean); } })),
+    el("p", { class: "label", text: "ລົດທີ່ນັບ 18L ທັງໝົດເປັນອົງກອນ: " + (E.orgVehicles.join(", ") || "—") + " (ແກ້ໃນ ຕັ້ງຄ່າ > ລາຍຊື່ລົດ)" }),
+    el("div", { class: "row" }, el("b", { text: "ລົດໃຫຍ່ — ຊື່ໃນລາຍການໂອນ (TL-)" }), el("button", { class: "btn sm spacer", onclick: function () { E.transferVehicleMap["ຊື່ໃໝ່"] = cfg.vehicles[0].id; renderErpCfg(); } }, "+ ລົດ")),
+    el("div", { class: "tbl-wrap" }, el("table", { class: "tier-edit" }, el("tbody", {}, Object.keys(E.transferVehicleMap).map(function (k) {
+      return el("tr", {}, el("td", {}, el("input", { value: k, onchange: function (ev) { var v = E.transferVehicleMap[k]; delete E.transferVehicleMap[k]; if (ev.target.value.trim()) E.transferVehicleMap[ev.target.value.trim()] = v; renderErpCfg(); } })),
+        el("td", {}, el("select", { onchange: function (ev) { E.transferVehicleMap[k] = ev.target.value; } }, cfg.vehicles.map(function (v) { return el("option", { value: v.id, text: v.name, selected: E.transferVehicleMap[k] === v.id || null }); }))),
+        el("td", {}, el("button", { class: "btn ghost sm", "aria-label": "ລຶບ", onclick: function () { delete E.transferVehicleMap[k]; renderErpCfg(); } }, "✕")));
+    })))),
+    el("label", { class: "field" }, el("span", { class: "label", text: "ປາຍທາງທີ່ບໍ່ນັບເປັນການສົ່ງ (ຂັ້ນດ້ວຍ ,) ເຊັ່ນ ໂຮງງານ" }), el("input", { value: (E.transferExcludeDest || []).join(", "), oninput: function (ev) { E.transferExcludeDest = ev.target.value.split(",").map(function (x) { return x.trim(); }).filter(Boolean); } })),
+    el("label", { class: "row label" }, el("input", { type: "checkbox", checked: E.countEmptyRounds || null, onchange: function (ev) { E.countEmptyRounds = ev.target.checked; } }), "ນັບຖ້ຽວຂົນຕຸກເປົ່າເປັນຮອບ (ຈ່າຍຕາມຂັ້ນຕໍ່ຮອບຄືກັນ)"),
+    el("p", { class: "label", text: "ວິທີນັບຮອບລົດໃຫຍ່: ໂຫຼດຕຸກເຕັມຂຶ້ນລົດ = ເລີ່ມຖ້ຽວໃໝ່ · ສົ່ງຕຸກເຕັມລົງສາຂາ/ແຟຣນຊາຍ/ສາງ = ລວມເປັນຮອບຂອງຖ້ຽວນັ້ນ (ແບ່ງລົງຫຼາຍບ່ອນ ຍັງນັບ 1 ຮອບ) · ນັບສະເພາະສະຖານະ ຮັບແລ້ວ" }));
+}
+$("#erpCfgSave").onclick = function () {
+  api("config.save", { config: S.erpDraft }).then(function (r) { if (!r.ok) { toast(r.message || r.error); return; } S.cfg = r.config; S.erpDraft = null; S.setDraft = null; renderErpCfg(); toast("ບັນທຶກກົດ ERP ແລ້ວ"); if (erpState) renderErpPreview(erpState); });
+};
+
+/* ================= admin: settings ================= */
+function renderSettings() {
+  var cfg = S.setDraft || (S.setDraft = clone(S.cfg)), g = $("#setGrid"); g.replaceChildren(); $("#setMsg").textContent = "";
+  function inp(obj, key, attrs) { attrs = attrs || {}; return el("input", Object.assign({ value: obj[key] == null ? "" : obj[key], oninput: function (ev) { obj[key] = attrs.type === "number" ? (ev.target.value === "" ? null : Number(ev.target.value)) : ev.target.value; } }, attrs)); }
+  function card(title, body, act) { return el("div", { class: "card" }, el("div", { class: "card-h" }, el("h2", { text: title }), act || null), el("div", { class: "card-b stack" }, body)); }
+  function field(label, node) { return el("label", { class: "field" }, el("span", { class: "label", text: label }), node); }
+  g.append(card("ຮອບເດືອນ ແລະ ອັດຕາຄົງທີ່", [
+    field("ວັນເລີ່ມຮອບເດືອນ (1–28)", inp(cfg, "periodStartDay", { type: "number", min: "1", max: "28" })),
+    field("ຂວດແກ້ວ (ກີບ/ລັງ)", inp(cfg.flat, "glass", { type: "number" })), field("250ml (ກີບ/ແພັກ)", inp(cfg.flat, "m250", { type: "number" })), field("ນ້ຳແພັກ (ກີບ/ແພັກ)", inp(cfg.flat, "pack", { type: "number" })),
+    field("ມັດຈຳຕໍ່ຕຸກ 18L (ກີບ) — ໃຊ້ຄິດມັດຈຳຕຸກຄ້າງສາຂາ", inp(cfg, "depositPerBottle", { type: "number" })),
+    field("ເງິນບໍ່ຂາດວຽກ (ກີບ/ເດືອນ)", inp(cfg.bonus, "full", { type: "number" })), field("ເງິນມາວຽກເຊົ້າ (ກີບ/ເດືອນ)", inp(cfg.bonus, "early", { type: "number" }))]));
+  g.append(card("ການກວດຕົວເລກ", [
+    field("ເຕືອນເມື່ອ ລົດນ້ອຍ ເກີນ (ໜ່ວຍ/ມື້)", inp(cfg, "warnDaily", { type: "number" })), field("ເຕືອນເມື່ອ ລົດໃຫຍ່ ເກີນ (ຕຸກ/ຮອບ)", inp(cfg, "warnRound", { type: "number" })),
+    field("ບໍ່ຮັບເກີນ (ຄົນຂັບ)", inp(cfg, "hardCap", { type: "number" })), field("ຄົນຂັບແກ້ຍ້ອນຫຼັງໄດ້ (ມື້)", inp(cfg, "driverBackDays", { type: "number", min: "0", max: "7" }))]));
+  function tierCard(title, key, unit) {
+    var tiers = cfg[key], t = el("table", { class: "tier-edit" }, el("thead", {}, el("tr", {}, el("th", { text: "ຈາກ (ຕຸກ)" }), el("th", { text: unit }), el("th")))), tb = el("tbody");
+    tiers.forEach(function (row, i) { tb.append(el("tr", {}, el("td", {}, el("input", { type: "number", value: row[0], oninput: function (ev) { row[0] = Number(ev.target.value); } })),
+      el("td", {}, el("input", { type: "number", value: row[1], oninput: function (ev) { row[1] = Number(ev.target.value); } })),
+      el("td", {}, el("button", { class: "btn ghost sm", "aria-label": "ລຶບຂັ້ນ", onclick: function () { tiers.splice(i, 1); renderSettings(); } }, "✕")))); });
+    t.append(tb);
+    return card(title, [t, el("p", { class: "label", text: "ຈຳນວນ ≥ 'ຈາກ' ໃຊ້ອັດຕາແຖວນັ້ນ · ຂັ້ນສຸດທ້າຍ = ຂຶ້ນໄປ" })],
+      el("button", { class: "btn sm", onclick: function () { var l = tiers[tiers.length - 1] || [0, 0]; tiers.push([l[0] + 50, l[1]]); renderSettings(); } }, "+ ຂັ້ນ"));
+  }
+  g.append(tierCard("ລົດນ້ອຍ · ຄົວເຮືອນ ຕໍ່ມື້", "hhTiers", "ກີບ/ຕຸກ"), tierCard("ລົດນ້ອຍ · ອົງກອນ ຕໍ່ມື້", "orgTiers", "ກີບ/ຕຸກ"), tierCard("ລົດໃຫຍ່ · ຕໍ່ຮອບ", "bigTiers", "ກີບ/ຮອບ"));
+  var vt = el("table", { class: "tier-edit" }, el("thead", {}, el("tr", {}, el("th", { text: "ລະຫັດ" }), el("th", { text: "ຊື່" }), el("th", { text: "ປະເພດ" }), el("th", { text: "18L=ອົງກອນ" }), el("th")))), vb = el("tbody");
+  cfg.erp = cfg.erp || clone(C.DEFAULT_CONFIG.erp);
+  cfg.vehicles.forEach(function (v, i) { var saved = S.cfg.vehicles.some(function (x) { return x.id === v.id; });
+    vb.append(el("tr", {}, el("td", {}, el("input", { value: v.id, disabled: saved || null, oninput: function (ev) { v.id = ev.target.value.trim(); } })), el("td", {}, inp(v, "name")),
+      el("td", {}, el("select", { onchange: function (ev) { v.type = ev.target.value; } }, el("option", { value: "small", text: "ລົດນ້ອຍ", selected: v.type === "small" || null }), el("option", { value: "big", text: "ລົດໃຫຍ່", selected: v.type === "big" || null }))),
+      el("td", {}, el("input", { type: "checkbox", style: "width:auto;min-width:0", checked: cfg.erp.orgVehicles.indexOf(v.id) >= 0 || null, title: "ນັບຕຸກ 18L ຈາກ ERP ທັງໝົດເປັນອົງກອນ", onchange: function (ev) { var o = cfg.erp.orgVehicles.filter(function (x) { return x !== v.id; }); if (ev.target.checked) o.push(v.id); cfg.erp.orgVehicles = o; } })),
+      el("td", {}, el("button", { class: "btn ghost sm", "aria-label": "ລຶບລົດ", onclick: function () { cfg.vehicles.splice(i, 1); renderSettings(); } }, "✕")))); });
+  vt.append(vb);
+  g.append(card("ລາຍຊື່ລົດ", [el("div", { class: "tbl-wrap" }, vt), el("p", { class: "label", text: "ລະຫັດ: ຕົວອັງກິດ/ຕົວເລກ, ປ່ຽນບໍ່ໄດ້ຫຼັງບັນທຶກ" })],
+    el("button", { class: "btn sm", onclick: function () { cfg.vehicles.push({ id: "", name: "ລົດໃໝ່", type: "small" }); renderSettings(); } }, "+ ລົດ")));
+  renderStaff();
+}
+function renderStaff() {
+  var list = S.staffDraft || (S.staffDraft = clone(S.staff)), t = $("#staffTable"); t.replaceChildren();
+  t.append(el("thead", {}, el("tr", {}, ["ຊື່ຫຼິ້ນ", "ຊື່ເຕັມ", "ລົດປະຈຳ", "ບົດບາດ", "ເຮັດວຽກ", "PIN"].map(function (h) { return el("th", { text: h }); }))));
+  var tb = el("tbody");
+  list.forEach(function (s) { var saved = S.staff.some(function (x) { return x.nick === s.nick; });
+    tb.append(el("tr", {},
+      el("td", {}, el("input", { value: s.nick, disabled: saved || null, oninput: function (ev) { s.nick = ev.target.value; } })),
+      el("td", {}, el("input", { value: s.full || "", oninput: function (ev) { s.full = ev.target.value; } })),
+      el("td", {}, el("select", { onchange: function (ev) { s.veh = ev.target.value; } }, el("option", { value: "", text: "–" }), S.cfg.vehicles.map(function (v) { return el("option", { value: v.id, text: v.name, selected: s.veh === v.id || null }); }))),
+      el("td", {}, el("select", { onchange: function (ev) { s.role = ev.target.value; } }, el("option", { value: "driver", text: "ຄົນຂັບ", selected: s.role !== "admin" || null }), el("option", { value: "admin", text: "ຜູ້ຈັດການ", selected: s.role === "admin" || null }))),
+      el("td", {}, el("input", { type: "checkbox", style: "width:auto;min-width:0", checked: s.active !== false || null, onchange: function (ev) { s.active = ev.target.checked; } })),
+      el("td", {}, saved ? el("button", { class: "btn sm", onclick: function () { resetPin(s.nick); } }, "ຣີເຊັດ PIN") : el("span", { class: "label", text: "ໄດ້ຫຼັງບັນທຶກ" }))));
+  });
+  t.append(tb);
+}
+function showPins(map) {
+  var o = $("#pinOut"); o.replaceChildren();
+  var keys = Object.keys(map); if (!keys.length) return;
+  o.append(el("div", { class: "warnbox" }, el("b", { text: "PIN ໃໝ່ (ສະແດງຄັ້ງດຽວ — ຈົດແລ້ວແຈກໃຫ້ເຈົ້າຕົວ):" }),
+    keys.map(function (k) { return el("div", { class: "row" }, el("b", { text: k }), el("span", { class: "pinshow", text: map[k] })); })));
+}
+function resetPin(nick) {
+  api("staff.pin", { nick: nick }).then(function (r) { if (!r.ok) { handleErr(r); return; } var m = {}; m[r.nick] = r.pin; showPins(m); toast("ຣີເຊັດ PIN ຂອງ " + r.nick + " ແລ້ວ"); });
+}
+$("#staffAdd").onclick = function () { (S.staffDraft = S.staffDraft || clone(S.staff)).push({ nick: "", full: "", veh: "", role: "driver", active: true }); renderStaff(); };
+$("#staffSave").onclick = function () {
+  api("staff.save", { staff: S.staffDraft || S.staff }).then(function (r) {
+    if (!r.ok) { handleErr(r); return; }
+    S.staff = r.staff; S.staffDraft = null; renderStaff(); showPins(r.newPins || {}); toast("ບັນທຶກລາຍຊື່ແລ້ວ");
+  });
+};
+$("#setSave").onclick = function () {
+  api("config.save", { config: S.setDraft }).then(function (r) {
+    if (!r.ok) { $("#setMsg").textContent = r.message || r.error; return; }
+    S.cfg = r.config; S.setDraft = null; renderSettings(); toast("ບັນທຶກຕັ້ງຄ່າແລ້ວ");
+  });
+};
+if (!SEED_ENTRIES.length) { var ib = $("#importBtn"); if (ib) ib.closest(".card").hidden = true; }
+$("#importBtn").onclick = function () {
+  var b = this; b.disabled = true;
+  api("import", { entries: SEED_ENTRIES }).then(function (r) { b.disabled = false; if (!r.ok) { handleErr(r); return; } S.loaded = {}; toast("ນຳເຂົ້າ " + r.imported + " ລາຍການ (ລາຍການທີ່ມີແລ້ວ ບໍ່ຖືກທັບ)"); });
+};
+$("#logoutBtn").onclick = function () { if (leaveOk()) logout(false); };
+window.addEventListener("beforeunload", function (ev) { if (S.form && S.form.dirty) { ev.preventDefault(); ev.returnValue = ""; } });
+
+/* ================= start ================= */
+var sess = lsGet("vari_trucks_session");
+if (sess && sess.token) { S.token = sess.token; boot(); } else showLogin();
+})();
+</script>
+</body>
+</html>
