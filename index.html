@@ -644,6 +644,18 @@ var VariCore = (function () {
     return res;
   }
 
+  function visibleEntries(me, S, cfg, today, from, to) {
+    var list = S.listEntries(from, to);
+    if (me.role !== "admin") { var recent = addDays(today, -num(cfg.driverBackDays)); list = list.filter(function (e) { return e.crew.indexOf(me.nick) >= 0 || e.date >= recent; }); }
+    return list;
+  }
+  // start-up payload: user, settings, staff and the entries of this pay period (+14 days back)
+  function bootData(me, S) {
+    var cfg = S.getConfig(), today = S.today(), p = periodOf(today, cfg.periodStartDay);
+    var from = addDays(today, -14) < p.start ? addDays(today, -14) : p.start, to = p.end;
+    return { me: pub(me), config: cfg, today: today, staff: S.listStaff().map(pub), entries: visibleEntries(me, S, cfg, today, from, to), from: from, to: to };
+  }
+
   // ================= request handler =================
   function handle(body, S) {
     var a = body && body.action;
@@ -655,22 +667,22 @@ var VariCore = (function () {
       var st = S.listStaff().filter(function (s) { return s.nick === nick && s.active; })[0];
       if (!st || !st.pinHash || S.hash(st.salt + ":" + pin) !== st.pinHash) { S.setFails(nick, fails + 1); return err("bad_pin", "ຊື່ ຫຼື PIN ບໍ່ຖືກຕ້ອງ"); }
       S.setFails(nick, 0);
-      S.log(nick, "login", "");
-      return ok({ token: makeToken(S, st.nick, st.role), me: pub(st) });
+      // one round trip: token + everything the app needs to start
+      var out = bootData(st, S);
+      out.token = makeToken(S, st.nick, st.role);
+      return ok(out);
     }
     var me = readToken(S, body.token);
     if (!me) return err("auth", "ກະລຸນາເຂົ້າສູ່ລະບົບໃໝ່");
     var admin = me.role === "admin", cfg = S.getConfig(), today = S.today();
 
-    if (a === "boot") return ok({ me: pub(me), config: cfg, today: today, staff: S.listStaff().map(pub) });
+    if (a === "boot") return ok(bootData(me, S));
 
     if (a === "entries") {
       var from = String(body.from || ""), to = String(body.to || "");
       if (!DATE_RE.test(from) || !DATE_RE.test(to) || to < from) return err("bad_request");
       if (!admin && from < addDays(today, -62)) from = addDays(today, -62);
-      var list = S.listEntries(from, to);
-      if (!admin) { var recent = addDays(today, -num(cfg.driverBackDays)); list = list.filter(function (e) { return e.crew.indexOf(me.nick) >= 0 || e.date >= recent; }); }
-      return ok({ entries: list, today: today });
+      return ok({ entries: visibleEntries(me, S, cfg, today, from, to), today: today });
     }
 
     if (a === "save") {
@@ -904,10 +916,24 @@ function api(action, payload) {
     demo = demo || new DemoStore();
     return new Promise(function (res) { setTimeout(function () { res(clone(C.handle(clone(body), demo))); }, 120); });
   }
-  return fetch(APPS_SCRIPT_URL, { method: "POST", body: JSON.stringify(body), redirect: "follow" })
-    .then(function (r) { return r.json(); })
-    .then(function (r) { setNet(true); return r; })
-    .catch(function () { setNet(false); return { ok: false, error: "network", message: "ເຊື່ອມຕໍ່ບໍ່ໄດ້ — ກວດອິນເຕີເນັດ ແລ້ວລອງໃໝ່" }; });
+  var readOnly = { names: 1, boot: 1, entries: 1, "payroll.get": 1 }[action], tries = readOnly ? 3 : 1;
+  function attempt(n) {
+    var ctl = window.AbortController ? new AbortController() : null, timer = ctl && setTimeout(function () { ctl.abort(); }, readOnly ? 30000 : 45000);
+    return fetch(APPS_SCRIPT_URL, { method: "POST", body: JSON.stringify(body), redirect: "follow", signal: ctl ? ctl.signal : undefined })
+      .then(function (r) { return r.text(); })
+      .then(function (t) {
+        clearTimeout(timer);
+        var r; try { r = JSON.parse(t); } catch (x) { throw new Error("busy"); } // Google sometimes returns an HTML error page
+        setNet(true); return r;
+      })
+      .catch(function () {
+        clearTimeout(timer);
+        if (n + 1 < tries) { setNet(false); return new Promise(function (res) { setTimeout(res, 800 * (n + 1)); }).then(function () { return attempt(n + 1); }); }
+        setNet(false);
+        return { ok: false, error: "network", message: readOnly ? "ເຊີບເວີຕອບຊ້າ ຫຼື ເນັດຂາດ — ກົດລອງໃໝ່" : "ບັນທຶກບໍ່ສຳເລັດ (ເນັດ/ເຊີບເວີ) — ຮ່າງຍັງຢູ່ ກົດບັນທຶກອີກຄັ້ງ" };
+      });
+  }
+  return attempt(0);
 }
 function setNet(ok) { $("#netDot").className = "dot " + (ok ? "ok" : "bad"); }
 
@@ -930,20 +956,28 @@ var loginState = { nick: null, pin: "" };
 function showLogin() {
   $("#appScreen").hidden = true; $("#loginScreen").hidden = false;
   if (!APPS_SCRIPT_URL) { var d = $("#demoNote"); d.hidden = false; d.textContent = "ໂໝດທົດລອງ (ຍັງບໍ່ໄດ້ເຊື່ອມ Google Sheets) — PIN ຄົນຂັບ 1234 · admin 000000. ຂໍ້ມູນເກັບໃນເຄື່ອງນີ້ເທົ່ານັ້ນ."; }
+  var cachedNames = lsGet("vari_trucks_names");
+  if (cachedNames) drawNames(cachedNames); else $("#loginErr").textContent = "ກຳລັງໂຫຼດລາຍຊື່…";
   api("names").then(function (r) {
+    if (!r.ok) { if (!cachedNames) $("#loginErr").textContent = r.message || "ໂຫຼດລາຍຊື່ບໍ່ໄດ້"; return; }
+    if ($("#loginErr").textContent === "ກຳລັງໂຫຼດລາຍຊື່…") $("#loginErr").textContent = "";
+    lsSet("vari_trucks_names", r.names);
+    if (JSON.stringify(r.names) !== JSON.stringify(cachedNames)) drawNames(r.names);
+  });
+  var kp = $("#keypad"); kp.replaceChildren();
+  ["1", "2", "3", "4", "5", "6", "7", "8", "9", "ລຶບ", "0", "ເຂົ້າ"].forEach(function (k) {
+    kp.append(el("button", { class: isNaN(k) ? "fn" : "", onclick: function () { keyPin(k); } }, k));
+  });
+}
+function drawNames(names) {
+  var r = { names: names };
     var g = $("#nameGrid"); g.replaceChildren();
-    if (!r.ok) { $("#loginErr").textContent = r.message || "ໂຫຼດລາຍຊື່ບໍ່ໄດ້"; return; }
     var last = lsGet("vari_trucks_last");
     r.names.sort(function (a, b) { return (a.role === "admin") - (b.role === "admin"); }).forEach(function (n) {
       g.append(el("button", { class: n.role === "admin" ? "adm" : "", "aria-pressed": loginState.nick === n.nick || (!loginState.nick && last === n.nick), onclick: function () { loginState.nick = n.nick; loginState.pin = ""; $("#loginErr").textContent = ""; showLoginSel(); } }, n.role === "admin" ? "ຜູ້ຈັດການ (admin)" : n.nick));
     });
     if (!loginState.nick && last && r.names.some(function (n) { return n.nick === last; })) loginState.nick = last;
     showLoginSel();
-  });
-  var kp = $("#keypad"); kp.replaceChildren();
-  ["1", "2", "3", "4", "5", "6", "7", "8", "9", "ລຶບ", "0", "ເຂົ້າ"].forEach(function (k) {
-    kp.append(el("button", { class: isNaN(k) ? "fn" : "", onclick: function () { keyPin(k); } }, k));
-  });
 }
 function showLoginSel() {
   document.querySelectorAll("#nameGrid button").forEach(function (b) { b.setAttribute("aria-pressed", b.textContent === loginState.nick || (loginState.nick === "admin" && b.classList.contains("adm"))); });
@@ -952,6 +986,7 @@ function showLoginSel() {
   for (var i = 0; i < Math.max(len, loginState.pin.length); i++) d.append(el("span", { class: i < loginState.pin.length ? "on" : "" }));
 }
 function keyPin(k) {
+  if (loginState.busy) return;
   if (!loginState.nick) { $("#loginErr").textContent = "ເລືອກຊື່ກ່ອນ"; return; }
   if (k === "ລຶບ") loginState.pin = loginState.pin.slice(0, -1);
   else if (k === "ເຂົ້າ") return doLogin();
@@ -961,29 +996,48 @@ function keyPin(k) {
 }
 function doLogin() {
   var pin = loginState.pin; loginState.pin = ""; showLoginSel();
-  $("#loginErr").textContent = "ກຳລັງກວດ…";
+  $("#loginErr").textContent = "ກຳລັງເຂົ້າລະບົບ… (ອາດໃຊ້ 5–10 ວິນາທີ)"; loginState.busy = true; $("#keypad").style.opacity = ".5";
   api("login", { nick: loginState.nick, pin: pin }).then(function (r) {
+    loginState.busy = false; $("#keypad").style.opacity = "";
     if (!r.ok) { $("#loginErr").textContent = r.message || "ເຂົ້າບໍ່ໄດ້"; return; }
     $("#loginErr").textContent = ""; lsSet("vari_trucks_last", loginState.nick);
-    S.token = r.token; lsSet("vari_trucks_session", { token: r.token }); boot();
+    S.token = r.token; lsSet("vari_trucks_session", { token: r.token });
+    if (r.config) applyBoot(r); else boot(); // older backend: login returns only the token
   });
 }
 function logout(expired) {
-  S.token = null; S.me = null; S.entries = {}; S.loaded = {}; lsSet("vari_trucks_session", null);
+  S.token = null; S.me = null; S.entries = {}; S.ranges = []; lsSet("vari_trucks_session", null); lsSet("vari_trucks_cache", null);
   showLogin(); if (expired) $("#loginErr").textContent = "ໝົດເວລາ — ກະລຸນາເຂົ້າໃໝ່";
 }
 
 /* ================= boot ================= */
 function boot() {
+  var cached = lsGet("vari_trucks_cache");
+  if (cached && cached.me) applyBoot(cached, true);
+  else if ($("#appScreen").hidden) { showLogin(); $("#loginErr").textContent = "ກຳລັງເປີດ…"; }
   api("boot").then(function (r) {
-    if (!r.ok) { handleErr(r); if (r.error !== "auth") showLogin(); return; }
+    if (!r.ok) { if (r.error === "auth") { handleErr(r); return; } if (!cached) { showLogin(); $("#loginErr").textContent = r.message; } else toast(r.message); return; }
+    applyBoot(r);
+    if (!r.entries) periodLoad(true).then(function () { render(false); }); // older backend: boot has no entries
+  });
+}
+// start (or refresh) the app from a boot/login payload; payload also carries this period's entries
+function applyBoot(r, fromCache) {
+    var first = !S.me || S.me.nick !== r.me.nick;
     S.me = r.me; S.cfg = r.config; S.staff = r.staff; S.today = r.today;
+    if (r.entries) {
+      Object.keys(S.entries).forEach(function (k) { var e = S.entries[k]; if (e.date >= r.from && e.date <= r.to) delete S.entries[k]; });
+      r.entries.forEach(function (e) { S.entries[e.id] = e; });
+      if (!fromCache) addRange(r.from, r.to);
+    }
+    if (!fromCache) lsSet("vari_trucks_cache", { me: r.me, config: r.config, staff: r.staff, today: r.today, entries: r.entries, from: r.from, to: r.to });
+    if (!first) { if (!(S.form && S.form.dirty)) render(false); return; }
     $("#loginScreen").hidden = true; $("#appScreen").hidden = false;
     $("#whoName").textContent = S.me.role === "admin" ? S.me.full || "ຜູ້ຈັດການ" : S.me.nick;
     $("#whoRole").textContent = isAdmin() ? "ຜູ້ຈັດການ" : "ຄົນຂັບ";
     $("#todayLabel").textContent = "ວັນ" + DAYS[dow(S.today)] + " " + dmy(S.today);
     if (!APPS_SCRIPT_URL) { var b = $("#banner"); b.hidden = false; b.textContent = "ໂໝດທົດລອງ — ຂໍ້ມູນເກັບໃນເຄື່ອງນີ້ເທົ່ານັ້ນ. ໃສ່ APPS_SCRIPT_URL ເພື່ອໃຊ້ງານຈິງ."; }
-    setNet(true);
+    if (!fromCache) setNet(true);
     S.period = C.periodOf(S.today, S.cfg.periodStartDay); S.tDate = S.today;
     S.form = { date: S.today, veh: (S.me.veh && S.cfg.vehicles.some(function (v) { return v.id === S.me.veh; })) ? S.me.veh : S.cfg.vehicles[0].id };
     var tabs = isAdmin() ? [["today", "ມື້ນີ້"], ["report", "ບັນທຶກ"], ["erp", "ERP"], ["people", "ລາຍຄົນ"], ["fleet", "ລາຍລົດ"], ["settings", "ຕັ້ງຄ່າ"]]
@@ -991,16 +1045,19 @@ function boot() {
     var nav = $("#tabs"); nav.replaceChildren();
     tabs.forEach(function (t) { nav.append(el("button", { role: "tab", "data-tab": t[0], onclick: function () { if (!leaveOk()) return; showTab(t[0]); } }, t[1])); });
     showTab(tabs[0][0]);
-  });
 }
+function addRange(from, to) { S.ranges = (S.ranges || []).concat([{ from: from, to: to, at: Date.now() }]); }
+function covered(from, to, maxAge) {
+  return (S.ranges || []).some(function (x) { return x.from <= from && x.to >= to && (!maxAge || Date.now() - x.at < maxAge); });
+}
+function invalidate() { S.ranges = []; }
 function load(from, to, force) {
-  var key = from + "|" + to;
-  if (S.loaded[key] && !force) return Promise.resolve(true);
+  if (!force && covered(from, to)) return Promise.resolve(true);
   return api("entries", { from: from, to: to }).then(function (r) {
     if (!r.ok) { handleErr(r); return false; }
     Object.keys(S.entries).forEach(function (k) { var e = S.entries[k]; if (e.date >= from && e.date <= to) delete S.entries[k]; });
     r.entries.forEach(function (e) { S.entries[e.id] = e; });
-    S.today = r.today || S.today; S.loaded[key] = Date.now(); return true;
+    S.today = r.today || S.today; addRange(from, to); return true;
   });
 }
 function periodLoad(force) { var p = S.period; return load(p.start, p.end < S.today || isAdmin() ? p.end : S.today, force); }
@@ -1030,7 +1087,7 @@ function render(fetch) {
   else p = periodLoad();
   go(); p.then(go);
 }
-setInterval(function () { if (document.visibilityState === "visible" && S.me && (S.tab === "today" || S.tab === "report") && !(S.form && S.form.dirty)) { S.loaded = {}; render(true); } }, 60000);
+setInterval(function () { if (document.visibilityState === "visible" && S.me && (S.tab === "today" || S.tab === "report") && !(S.form && S.form.dirty)) { invalidate(); render(true); } }, 120000);
 
 /* ================= report form ================= */
 function curEntry() { return S.entries[eid(S.form.date, S.form.veh)] || null; }
@@ -1323,7 +1380,7 @@ function approve(ids, status) {
 var moveT = function (d) { S.tDate = d; render(true); };
 $("#tPrev").onclick = function () { moveT(C.addDays(S.tDate, -1)); }; $("#tNext").onclick = function () { moveT(C.addDays(S.tDate, 1)); };
 $("#tToday").onclick = function () { moveT(S.today); }; $("#tDate").onchange = function () { if (this.value) moveT(this.value); };
-$("#tRefresh").onclick = function () { S.loaded = {}; render(true); };
+$("#tRefresh").onclick = function () { invalidate(); render(true); };
 
 /* ================= admin: period summaries ================= */
 function periodRow(id) {
@@ -1331,7 +1388,7 @@ function periodRow(id) {
   r.append(el("button", { class: "btn sm", "aria-label": "ຮອບກ່ອນ", onclick: function () { S.period = C.periodOf(C.addDays(S.period.start, -1), S.cfg.periodStartDay); render(true); } }, "‹"),
     el("b", { text: "ຮອບ " + dm(S.period.start) + " – " + dmy(S.period.end) }),
     el("button", { class: "btn sm", "aria-label": "ຮອບຕໍ່ໄປ", onclick: function () { S.period = C.periodOf(C.addDays(S.period.end, 1), S.cfg.periodStartDay); render(true); } }, "›"),
-    el("button", { class: "btn ghost sm spacer", onclick: function () { S.loaded = {}; render(true); } }, "ໂຫຼດໃໝ່"));
+    el("button", { class: "btn ghost sm spacer", onclick: function () { invalidate(); render(true); } }, "ໂຫຼດໃໝ່"));
 }
 function aggregate() {
   var cfg = S.cfg, people = {}, byVD = {}, total = 0, pend = 0, unassigned = 0;
@@ -1510,7 +1567,7 @@ $("#erpFile").onchange = function () {
 function importBackup(list) {
   if (!list.length) { $("#erpMsg").textContent = "ບໍ່ພົບລາຍການໃນໄຟລ໌ Export"; return; }
   $("#erpMsg").textContent = "ໄຟລ໌ Export ຂອງແອັບ: " + list.length + " ລາຍການ — ກຳລັງນຳເຂົ້າ (ລາຍການທີ່ມີແລ້ວ ບໍ່ຖືກທັບ)…";
-  api("import", { entries: list }).then(function (r) { if (!r.ok) { handleErr(r); return; } S.loaded = {}; $("#erpMsg").textContent = "ນຳເຂົ້າຈາກໄຟລ໌ Export ແລ້ວ " + r.imported + " ລາຍການ (ຂ້າມ " + (list.length - r.imported) + " ທີ່ມີແລ້ວ)"; });
+  api("import", { entries: list }).then(function (r) { if (!r.ok) { handleErr(r); return; } invalidate(); $("#erpMsg").textContent = "ນຳເຂົ້າຈາກໄຟລ໌ Export ແລ້ວ " + r.imported + " ລາຍການ (ຂ້າມ " + (list.length - r.imported) + " ທີ່ມີແລ້ວ)"; });
 }
 $("#tlRead").onclick = function () {
   var t = C.parseTransferText($("#tlPaste").value);
@@ -1692,7 +1749,7 @@ $("#setSave").onclick = function () {
 if (!SEED_ENTRIES.length) { var ib = $("#importBtn"); if (ib) ib.closest(".card").hidden = true; }
 $("#importBtn").onclick = function () {
   var b = this; b.disabled = true;
-  api("import", { entries: SEED_ENTRIES }).then(function (r) { b.disabled = false; if (!r.ok) { handleErr(r); return; } S.loaded = {}; toast("ນຳເຂົ້າ " + r.imported + " ລາຍການ (ລາຍການທີ່ມີແລ້ວ ບໍ່ຖືກທັບ)"); });
+  api("import", { entries: SEED_ENTRIES }).then(function (r) { b.disabled = false; if (!r.ok) { handleErr(r); return; } invalidate(); toast("ນຳເຂົ້າ " + r.imported + " ລາຍການ (ລາຍການທີ່ມີແລ້ວ ບໍ່ຖືກທັບ)"); });
 };
 $("#logoutBtn").onclick = function () { if (leaveOk()) logout(false); };
 window.addEventListener("beforeunload", function (ev) { if (S.form && S.form.dirty) { ev.preventDefault(); ev.returnValue = ""; } });
