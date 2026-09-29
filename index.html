@@ -472,7 +472,7 @@ var VariCore = (function () {
     var i = token.lastIndexOf("|"); if (i < 0) return null;
     var payload = token.slice(0, i), sig = token.slice(i + 1);
     if (S.hmac(payload) !== sig) return null;
-    var p = payload.split("|"); if (p.length !== 3 || Number(p[2]) < Date.now()) return null;
+    var p = payload.split("|"); if (p.length !== 3 || !(Number(p[2]) >= Date.now())) return null;
     var st = S.listStaff().filter(function (s) { return s.nick === p[0] && s.active; })[0];
     if (!st || st.role !== p[1]) return null;
     return st;
@@ -650,15 +650,18 @@ var VariCore = (function () {
     return list;
   }
   // start-up payload: user, settings, staff and the entries of this pay period (+14 days back)
-  function bootData(me, S) {
+  function bootData(me, S, lite) {
     var cfg = S.getConfig(), today = S.today(), p = periodOf(today, cfg.periodStartDay);
     var from = addDays(today, -14) < p.start ? addDays(today, -14) : p.start, to = p.end;
-    return { me: pub(me), config: cfg, today: today, staff: S.listStaff().map(pub), entries: visibleEntries(me, S, cfg, today, from, to), from: from, to: to };
+    var out = { me: pub(me), config: cfg, today: today, staff: S.listStaff().map(pub), from: from, to: to };
+    if (!lite) out.entries = visibleEntries(me, S, cfg, today, from, to);
+    return out;
   }
 
   // ================= request handler =================
   function handle(body, S) {
     var a = body && body.action;
+    if (a === "ping") return ok({}); // wakes the server up; touches nothing
     if (a === "names") return ok({ names: S.listStaff().filter(function (s) { return s.active; }).map(function (s) { return { nick: s.nick, veh: s.veh, role: s.role }; }) });
     if (a === "login") {
       var nick = String(body.nick || ""), pin = String(body.pin || "");
@@ -668,7 +671,7 @@ var VariCore = (function () {
       if (!st || !st.pinHash || S.hash(st.salt + ":" + pin) !== st.pinHash) { S.setFails(nick, fails + 1); return err("bad_pin", "ຊື່ ຫຼື PIN ບໍ່ຖືກຕ້ອງ"); }
       S.setFails(nick, 0);
       // one round trip: token + everything the app needs to start
-      var out = bootData(st, S);
+      var out = bootData(st, S, !!body.lite); // lite: skip entries, the app loads them right after
       out.token = makeToken(S, st.nick, st.role);
       return ok(out);
     }
@@ -829,7 +832,7 @@ var VariCore = (function () {
 (function () {
 "use strict";
 // ===== ວາງ URL ຂອງ Apps Script Web App ຢູ່ນີ້ (ລົງທ້າຍ /exec). ປ່ອຍວ່າງ = ໂໝດທົດລອງ =====
-var APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby02fjJZMupkrNGBKBUB3sy6O5_hfDx2hCKVFpMkWnPWYUqyiVhcsqy77Tjc0KLNbth/exec";
+var APPS_SCRIPT_URL = "https://xpehjmiymlxqbydczppu.supabase.co/functions/v1/api"; // Supabase (ເດີມ: Google Apps Script)
 
 var SEED_ENTRIES = [];
 var C = VariCore, $ = function (s) { return document.querySelector(s); };
@@ -952,10 +955,17 @@ function handleErr(r) {
 }
 
 /* ================= login ================= */
-var loginState = { nick: null, pin: "" };
+var loginState = { nick: null, pin: "" }, lastPing = 0;
+// wake Google's server while the person is still choosing a name / typing the PIN
+function warmUp() {
+  if (!APPS_SCRIPT_URL || Date.now() - lastPing < 20000) return;
+  lastPing = Date.now();
+  fetch(APPS_SCRIPT_URL, { method: "POST", body: JSON.stringify({ action: "ping" }) }).catch(function () {});
+}
 function showLogin() {
   $("#appScreen").hidden = true; $("#loginScreen").hidden = false;
   if (!APPS_SCRIPT_URL) { var d = $("#demoNote"); d.hidden = false; d.textContent = "ໂໝດທົດລອງ (ຍັງບໍ່ໄດ້ເຊື່ອມ Google Sheets) — PIN ຄົນຂັບ 1234 · admin 000000. ຂໍ້ມູນເກັບໃນເຄື່ອງນີ້ເທົ່ານັ້ນ."; }
+  warmUp();
   var cachedNames = lsGet("vari_trucks_names");
   if (cachedNames) drawNames(cachedNames); else $("#loginErr").textContent = "ກຳລັງໂຫຼດລາຍຊື່…";
   api("names").then(function (r) {
@@ -974,7 +984,7 @@ function drawNames(names) {
     var g = $("#nameGrid"); g.replaceChildren();
     var last = lsGet("vari_trucks_last");
     r.names.sort(function (a, b) { return (a.role === "admin") - (b.role === "admin"); }).forEach(function (n) {
-      g.append(el("button", { class: n.role === "admin" ? "adm" : "", "aria-pressed": loginState.nick === n.nick || (!loginState.nick && last === n.nick), onclick: function () { loginState.nick = n.nick; loginState.pin = ""; $("#loginErr").textContent = ""; showLoginSel(); } }, n.role === "admin" ? "ຜູ້ຈັດການ (admin)" : n.nick));
+      g.append(el("button", { class: n.role === "admin" ? "adm" : "", "aria-pressed": loginState.nick === n.nick || (!loginState.nick && last === n.nick), onclick: function () { loginState.nick = n.nick; loginState.pin = ""; $("#loginErr").textContent = ""; showLoginSel(); warmUp(); } }, n.role === "admin" ? "ຜູ້ຈັດການ (admin)" : n.nick));
     });
     if (!loginState.nick && last && r.names.some(function (n) { return n.nick === last; })) loginState.nick = last;
     showLoginSel();
@@ -997,12 +1007,27 @@ function keyPin(k) {
 function doLogin() {
   var pin = loginState.pin; loginState.pin = ""; showLoginSel();
   $("#loginErr").textContent = "ກຳລັງເຂົ້າລະບົບ… (ອາດໃຊ້ 5–10 ວິນາທີ)"; loginState.busy = true; $("#keypad").style.opacity = ".5";
-  api("login", { nick: loginState.nick, pin: pin }).then(function (r) {
+  api("login", { nick: loginState.nick, pin: pin, lite: true }).then(function (r) {
     loginState.busy = false; $("#keypad").style.opacity = "";
     if (!r.ok) { $("#loginErr").textContent = r.message || "ເຂົ້າບໍ່ໄດ້"; return; }
     $("#loginErr").textContent = ""; lsSet("vari_trucks_last", loginState.nick);
     S.token = r.token; lsSet("vari_trucks_session", { token: r.token });
-    if (r.config) applyBoot(r); else boot(); // older backend: login returns only the token
+    if (!r.config) { boot(); return; } // older backend: login returns only the token
+    var bg = null;
+    if (!r.entries) { // lite login: open the app now, fetch this period's data in the background
+      bg = load(r.from, r.to, true);
+      S.pending = { from: r.from, to: r.to, p: bg };
+    }
+    applyBoot(r);
+    if (bg) {
+      var dot = $("#netDot"); dot.className = "dot pend"; dot.title = "ກຳລັງໂຫຼດຂໍ້ມູນ…";
+      bg.then(function (okd) {
+        S.pending = null;
+        if (!okd) return;
+        dot.title = ""; lsSet("vari_trucks_cache", { me: S.me, config: S.cfg, staff: S.staff, today: S.today, entries: inRange(r.from, r.to), from: r.from, to: r.to });
+        if (!(S.form && S.form.dirty)) { if (S.form) S.form.draft = null; render(false); }
+      });
+    }
   });
 }
 function logout(expired) {
@@ -1053,6 +1078,7 @@ function covered(from, to, maxAge) {
 function invalidate() { S.ranges = []; }
 function load(from, to, force) {
   if (!force && covered(from, to)) return Promise.resolve(true);
+  if (!force && S.pending && S.pending.from <= from && S.pending.to >= to) return S.pending.p; // already on its way
   return api("entries", { from: from, to: to }).then(function (r) {
     if (!r.ok) { handleErr(r); return false; }
     Object.keys(S.entries).forEach(function (k) { var e = S.entries[k]; if (e.date >= from && e.date <= to) delete S.entries[k]; });
