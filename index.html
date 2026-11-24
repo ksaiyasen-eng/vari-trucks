@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#1459A6">
+<meta name="robots" content="noindex,nofollow">
 <title>Vari ລົດຂົນສົ່ງ</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1567,7 +1568,7 @@ var xlsxReady = null;
 function loadXlsx() {
   if (window.XLSX) return Promise.resolve();
   return xlsxReady || (xlsxReady = new Promise(function (res, rej) {
-    var sc = document.createElement("script"); sc.src = "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js";
+    var sc = document.createElement("script"); sc.src = "https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"; sc.integrity = "sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT"; sc.crossOrigin = "anonymous";
     sc.onload = res; sc.onerror = function () { xlsxReady = null; rej(); }; document.head.append(sc);
   }));
 }
