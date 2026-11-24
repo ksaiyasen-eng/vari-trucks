@@ -321,7 +321,7 @@ td select.cell{border:1px solid var(--line-strong);border-radius:6px;padding:3px
       <div class="card-b stack">
         <div class="row"><input type="file" id="erpFile" accept=".xlsx,.xls,.csv" multiple><span class="label" id="erpMsg"></span></div>
         <details><summary class="label" style="cursor:pointer">ຫຼື ວາງຂໍ້ມູນການໂອນສິນຄ້າ (copy ຕາຕະລາງ TL- ຈາກໜ້າ ERP)</summary>
-          <div class="stack" style="margin-top:8px"><textarea id="tlPaste" rows="5" style="width:100%;border:1px solid var(--line-strong);border-radius:8px;padding:8px;background:var(--surface);font-size:13px" placeholder="TL-2026-005890   ໂຮງງານ   →   (ຊື່ລົດ 9041)   Vari Purified ນ້ຳຖັງທົ່ວໄປ 18 ລິດ   500 ຕຸກເປົ່າ   26 ກ.ຍ. 2026, 16:56   ຮັບແລ້ວ"></textarea>
+          <div class="stack" style="margin-top:8px"><textarea id="tlPaste" rows="5" style="width:100%;border:1px solid var(--line-strong);border-radius:8px;padding:8px;background:var(--surface);font-size:13px" placeholder="TL-2026-000000   ໂຮງງານ   →   (ຊື່ລົດ 9041)   Vari Purified ນ້ຳຖັງທົ່ວໄປ 18 ລິດ   500 ຕຸກເປົ່າ   26 ກ.ຍ. 2026, 16:56   ຮັບແລ້ວ"></textarea>
           <div class="row"><button class="btn sm" id="tlRead">ອ່ານຂໍ້ມູນທີ່ວາງ</button></div></div></details>
         <div id="erpSummary"></div>
         <div class="tbl-wrap"><table id="erpTable"></table></div>
@@ -363,12 +363,11 @@ td select.cell{border:1px solid var(--line-strong);border-radius:6px;padding:3px
 var VariCore = (function () {
   var DEFAULT_CONFIG = {
     periodStartDay: 21,
-    hhTiers: [[1, 500], [121, 800], [151, 1400], [201, 2000], [251, 2300], [281, 3000]],
-    orgTiers: [[1, 280], [201, 600], [251, 805], [281, 1050]],
-    bigTiers: [[1, 35000], [201, 50000], [300, 65000], [400, 95000]],
-    flat: { glass: 1500, m250: 350, pack: 350 },
-    bonus: { full: 300000, early: 200000 },
-    depositPerBottle: 50000, // ມັດຈຳຕໍ່ຕຸກ 18L (ຈາກ TL-2026-005869: 420 ຕຸກ = 21,000,000)
+    // ຄ່າຈ້າງ/ໂບນັດ/ມັດຈຳ ຈິງ ໂຫຼດຈາກເຊີບເວີຫຼັງລັອກອິນ (config ໃນ Supabase) — ບໍ່ເກັບໃນໜ້າເວັບ
+    hhTiers: [], orgTiers: [], bigTiers: [],
+    flat: { glass: 0, m250: 0, pack: 0 },
+    bonus: { full: 0, early: 0 },
+    depositPerBottle: 0,
     warnDaily: 350,      // ຈຳນວນຕໍ່ມື້ (ລົດນ້ອຍ) ທີ່ຕ້ອງຢືນຢັນກ່ອນສົ່ງ
     warnRound: 700,      // ຈຳນວນຕໍ່ຮອບ (ລົດໃຫຍ່) ທີ່ຕ້ອງຢືນຢັນ
     hardCap: 3000,       // ເກີນນີ້ ບໍ່ຮັບ
@@ -377,7 +376,7 @@ var VariCore = (function () {
       // ຊື່ລົດໃນ ERP (ຖັນ ລົດຂົນສົ່ງ) → ລະຫັດລົດໃນແອັບ. ລົດທີ່ບໍ່ຢູ່ນີ້ ຈະຖືກຂ້າມ (ແຟຣນຊາຍ, ລົດຮ່ວມ)
       vehicleMap: { "5311": "5311", "6096": "6096", "6097": "6097", "5968": "5968", "1942": "1942", "ລົດໄຟຟ້າ": "JAC" },
       orgVehicles: ["6097"],             // ລົດທີ່ນັບຕຸກ 18L ທັງໝົດເປັນ ອົງກອນ
-      retailPrice: 28000,                // ລາຄານີ້ຂຶ້ນໄປ + ປະເພດລູກຄ້າຄົວເຮືອນ = ຄົວເຮືອນ, ນອກນັ້ນ = ອົງກອນ
+      retailPrice: 0,                    // ລາຄານີ້ຂຶ້ນໄປ + ປະເພດລູກຄ້າຄົວເຮືອນ = ຄົວເຮືອນ, ນອກນັ້ນ = ອົງກອນ
       householdTypes: ["RETAIL", "ຄົວເຮືອນ"],
       products: [["18 ລິດ", "18L"], ["ຂວດແກ້ວ", "glass"], ["250", "m250"], ["", "pack"]], // ຄຳໃນຊື່ສິນຄ້າ → ຖັນ (ແຖວສຸດທ້າຍ "" = ອື່ນໆ)
       // ລາຍການໂອນສິນຄ້າ (TL-...) ສຳລັບລົດໃຫຍ່
@@ -392,13 +391,7 @@ var VariCore = (function () {
       { id: "9041", name: "ລົດໃຫຍ່ 9041", type: "big" }
     ]
   };
-  var DEFAULT_STAFF = [
-    ["admin", "ຜູ້ຈັດການຂົນສົ່ງ", "", "admin"],
-    ["ຊີບ", "ທ້າວ ຊີບ", "5311"], ["ຕິກ", "ທ້າວ ຕິກ", "5311"], ["ຫວານ", "ຫວານ", "5311"],
-    ["ລຸນ", "ທ້າວ ລຸນ", "6096"], ["ໂກ້", "ທ້າວ ພອນເທວາ (ໂກ້)", "6097"], ["ອ່າຍ", "ທ້າວ ຄໍາເພັດ (ອ່າຍ)", "6097"],
-    ["ນາວ", "ທ້າວ ນາວ", "6097"], ["ບຸນມາ", "ທ້າວ ບຸນມາ (ມາ)", "5968"], ["ອອຍ", "ທ້າວ ອອຍ", "5968"],
-    ["ທ່ຽງ", "ທ້າວ ທ່ຽງ", "9041"], ["ໜຶ່ງ", "ທ້າວ ໜຶ່ງ", "9041"], ["ວິຊະນຸ", "ທ້າວ ວິຊະນຸ", "9041"],
-    ["ຕີ", "ຕີ", ""], ["ເພັດ", "ເພັດ", ""], ["ຕ່ອງ", "ຕ່ອງ", ""], ["ຄອງ", "ຄອງ", ""], ["ຕົ້ນຕະວັນ", "ຕົ້ນຕະວັນ", ""], ["ອາເລັກ", "ອາເລັກ", ""]
+  var DEFAULT_STAFF = [ // ລາຍຊື່ພະນັກງານຈິງ ຢູ່ໃນເຊີບເວີເທົ່ານັ້ນ
   ].map(function (r) { return { nick: r[0], full: r[1], veh: r[2], role: r[3] || "driver", active: true }; });
 
   var QTY = ["hh", "org", "glass", "m250", "pack"];
@@ -894,14 +887,9 @@ function DemoStore() {
   this.today = laoToday;
   if (!st) {
     st = { config: clone(C.DEFAULT_CONFIG), entries: {}, payroll: {}, fails: {} };
-    st.staff = C.DEFAULT_STAFF.map(function (s) { return C.withPin(self, clone(s), s.role === "admin" ? "000000" : "1234"); });
+    st.staff = [];
     var t = laoToday();
     SEED_ENTRIES.forEach(function (e) { var x = clone(e); var c = C.calc(x, st.config); x.id = x.date + "_" + x.veh; x.total = Math.round(c.total); x.perPerson = c.perPerson; x.status = "approved"; x.submittedBy = x.updatedBy = x.approvedBy = "admin"; x.submittedAt = x.updatedAt = "2026-09-27T00:00:00.000Z"; st.entries[x.id] = x; });
-    [["5311", ["ຊີບ", "ຫວານ"], { hh: 138, org: 12 }], ["6097", ["ໂກ້", "ອ່າຍ", "ນາວ"], { org: 262 }], ["6096", ["ລຸນ"], { hh: 97 }]].forEach(function (d) {
-      var x = C.cleanEntry(Object.assign({ date: t, veh: d[0], crew: d[1] }, d[2]), st.config), c = C.calc(x, st.config);
-      x.id = t + "_" + d[0]; x.total = Math.round(c.total); x.perPerson = c.perPerson; x.status = "pending"; x.submittedBy = x.updatedBy = d[1][0]; x.submittedAt = x.updatedAt = new Date().toISOString(); x.approvedBy = ""; x.note = "ຕົວຢ່າງ";
-      st.entries[x.id] = x;
-    });
   }
   function save() { lsSet(KEY, st); }
   this.getFails = function (n) { return st.fails[n] || 0; }; this.setFails = function (n, v) { st.fails[n] = v; save(); };
@@ -965,7 +953,7 @@ function warmUp() {
 }
 function showLogin() {
   $("#appScreen").hidden = true; $("#loginScreen").hidden = false;
-  if (!APPS_SCRIPT_URL) { var d = $("#demoNote"); d.hidden = false; d.textContent = "ໂໝດທົດລອງ (ຍັງບໍ່ໄດ້ເຊື່ອມ Google Sheets) — PIN ຄົນຂັບ 1234 · admin 000000. ຂໍ້ມູນເກັບໃນເຄື່ອງນີ້ເທົ່ານັ້ນ."; }
+  if (!APPS_SCRIPT_URL) { var d = $("#demoNote"); d.hidden = false; d.textContent = "ໂໝດທົດລອງ (ຍັງບໍ່ໄດ້ເຊື່ອມ Google Sheets). ຂໍ້ມູນເກັບໃນເຄື່ອງນີ້ເທົ່ານັ້ນ."; }
   warmUp();
   var cachedNames = lsGet("vari_trucks_names");
   if (cachedNames) drawNames(cachedNames); else $("#loginErr").textContent = "ກຳລັງໂຫຼດລາຍຊື່…";
